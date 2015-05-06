@@ -183,6 +183,10 @@ $move-map-in-xs: true !default;
     }
 }
 
+ .collapsed > .sidebar-content {
+    overflow-y:hidden; }
+
+
 .sidebar-pane {
     display: none;
 
