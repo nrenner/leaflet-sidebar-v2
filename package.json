@@ -8,8 +8,8 @@
     "control",
     "map"
   ],
-  "main": "./js/leaflet-sidebar.js",
-  "style": "./css/leaflet-sidebar.css",
+  "main": "js/leaflet-sidebar.js",
+  "style": "css/leaflet-sidebar.css",
   "homepage": "https://github.com/nickpeihl/leaflet-sidebar-v2",
   "bugs": "https://github.com/nickpeihl/leaflet-sidebar-v2/issues",
   "license": "MIT",
