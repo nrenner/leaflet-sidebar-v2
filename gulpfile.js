@@ -33,9 +33,10 @@ gulp.task('lint:css', ['sass'], function() {
       'box-sizing': false,
       'fallback-colors': false,
       'important': false,
+      'order-alphabetical': false,
       'regex-selectors': false,
     }))
-    .pipe(csslint.reporter());
+    .pipe(csslint.formatter());
 });
 
 // Minify JS + CSS
