@@ -1,5 +1,17 @@
 # Changelog
 
+## v1.0.0 (2016-10-31)
+### Added
+- New API functions, `addPanel`, `removePanel`, `enablePanel`, `disablePanel`
+
+### Changed
+- Only compatible with Leaflet
+
+### Removed
+- Remove OpenLayers support
+- Remove Google Maps support
+
+
 ## v0.3.0 (2016-01-19)
 
 - ol2: move scale line control too when sidebar opens/closes
