@@ -29,8 +29,12 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
 
         // Find sidebar HTMLElement, create it if none was found
         this._sidebar = L.DomUtil.get(id);
-        if (this._sidebar === null)
-            this._sidebar = L.DomUtil.create('div', 'sidebar collapsed', document.body);
+        if (this._sidebar === null) {
+            this._sidebar = L.DomUtil.create('div', 'sidebar collapsed');
+            
+            // Add sidebar before map to position controls correctly
+            document.body.insertBefore(this._sidebar, document.body.firstChild);
+        }
 
         // Attach .sidebar-left/right class
         L.DomUtil.addClass(this._sidebar, 'sidebar-' + this.options.position);
