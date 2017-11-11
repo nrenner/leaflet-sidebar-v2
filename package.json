@@ -32,12 +32,11 @@
     "gulp-rename": "~1.2.0",
     "gulp-sass": "^3.1.0",
     "gulp-uglify": "^2.0.0",
-    "gulp-zip": "^3.2.0"
+    "gulp-zip": "^3.2.0",
+    "jshint": "^2.9.4"
   },
   "scripts": {
-    "test": "gulp lint"
-  },
-  "dependencies": {
-    "jshint": "^2.9.4"
+    "test": "gulp lint",
+    "watch": "gulp watch"
   }
 }
