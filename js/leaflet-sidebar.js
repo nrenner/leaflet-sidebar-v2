@@ -72,11 +72,13 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
         for (i = 0; i < this._tabContainerTop.children.length; i++) {
             child = this._tabContainerTop.children[i];
             child._sidebar = this;
+            child._id = child.querySelector('a').hash.slice(1); // FIXME: this could break for links!
             this._tabitems.push(child);
         }
         for (i = 0; i < this._tabContainerBottom.children.length; i++) {
             child = this._tabContainerBottom.children[i];
             child._sidebar = this;
+            child._id = child.querySelector('a').hash.slice(1); // FIXME: this could break for links!
             this._tabitems.push(child);
         }
 
@@ -237,24 +239,12 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
      *                                       on the top or the bottom of the sidebar. 'top' or 'bottom'
      * @param {HTMLString} {DOMnode} [data.tab]  content of the tab item, as HTMLstring or DOM node
      * @param {HTMLString} {DOMnode} [data.pane] content of the panel, as HTMLstring or DOM node
-     * @param {String} [data.id] the ID for the new Panel, must be unique for the whole page
+     * @param {String} [data.link] URL to an (external) link that will be opened instead of a panel
      *
      * @returns {L.Control.Sidebar}
      */
     addPanel: function(data) {
         var i, pane, tab, tabHref, closeButtons;
-
-        // Create pane node
-        if (typeof data.pane === 'string') {
-            // pane is given as HTML string
-            pane = L.DomUtil.create('DIV', 'sidebar-pane', this._paneContainer);
-            pane.innerHTML = data.pane;
-        } else {
-            // pane is given as DOM object
-            pane = data.pane;
-            this._paneContainer.appendChild(pane);
-        }
-        pane.id = data.id;
 
         // Create tab node
         tab     = L.DomUtil.create('li', '');
@@ -263,25 +253,42 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
         tabHref.setAttribute('role', 'tab');
         tabHref.innerHTML = data.tab;
         tab._sidebar = this;
+        tab._id = data.id;
+        tab._url = data.link; // to allow links to be disabled, the href cannot be used
 
+        // append it to the DOM and store JS references
         if (data.position === 'bottom')
             this._tabContainerBottom.appendChild(tab);
         else
             this._tabContainerTop.appendChild(tab);
 
-        // append new content to internal collections
-        this._panes.push(pane);
         this._tabitems.push(tab);
+
+        // Create pane node
+        if (data.pane) {
+            if (typeof data.pane === 'string') {
+                // pane is given as HTML string
+                pane = L.DomUtil.create('DIV', 'sidebar-pane', this._paneContainer);
+                pane.innerHTML = data.pane;
+            } else {
+                // pane is given as DOM object
+                pane = data.pane;
+                this._paneContainer.appendChild(pane);
+            }
+            pane.id = data.id;
+
+            this._panes.push(pane);
+
+            // Save references to close buttons & register click listeners
+            closeButtons = pane.querySelectorAll('.sidebar-close');
+            for (i = 0; i < closeButtons.length; i++) {
+                this._closeButtons.push(closeButtons[i]);
+                this._closeClick(closeButtons[i], 'on');
+            }
+        }
 
         // Register click listeners, if the sidebar is on the map
         this._tabClick(tab, 'on');
-
-        // Save references to close buttons & register click listeners
-        closeButtons = pane.querySelectorAll('.sidebar-close');
-        for (i = 0; i < closeButtons.length; i++) {
-            this._closeButtons.push(closeButtons[i]);
-            this._closeClick(closeButtons[i], 'on');
-        }
 
         return this;
     },
@@ -296,26 +303,33 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
      * @returns {L.Control.Sidebar}
      */
     removePanel: function(id) {
-        var i, j, pane, closeButtons;
+        var i, j, tab, pane, closeButtons;
 
-        // find the panel by ID
+        // find the tab & panel by ID, remove them, and clean up
+        for (i = 0; i < this._tabitems.length; i++) {
+            if (this._tabitems[i]._id === id) {
+                tab = this._tabitems[i];
+
+                // Remove click listeners
+                this._tabClick(tab, 'off');
+
+                tab.remove();
+                this._tabitems.slice(i, 1);
+                break;
+            }
+        }
+
         for (i = 0; i < this._panes.length; i++) {
             if (this._panes[i].id === id) {
                 pane = this._panes[i];
-
-                // Remove click listeners
-                this._tabClick(this.tabitems[i], 'off');
-
                 closeButtons = pane.querySelectorAll('.sidebar-close');
+                // FIXME: broken for loop. close button logic?
                 for (j = 0; i < closeButtons.length; i++) {
                     this._closeClick(closeButtons[j], 'off');
                 }
 
-                // remove both tab and panel, ASSUMING they have the same index!
                 pane.remove();
                 this._panes.slice(i, 1);
-                this._tabitems[i].remove();
-                this._tabitems.slice(i, 1);
 
                 break;
             }
@@ -364,10 +378,15 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
             return;
 
         var onTabClick = function() {
-            if (L.DomUtil.hasClass(this, 'active'))
+            // `this` points to the tab DOM element!
+            if (L.DomUtil.hasClass(this, 'active')) {
                 this._sidebar.close();
-            else if (!L.DomUtil.hasClass(this, 'disabled'))
-                this._sidebar.open(this.querySelector('a').hash.slice(1));
+            } else if (!L.DomUtil.hasClass(this, 'disabled')) {
+                if (this._url)
+                    window.location.href = this._url;
+                else
+                    this._sidebar.open(this.querySelector('a').hash.slice(1));
+            }
         };
 
         if (on === 'on') {
@@ -407,12 +426,9 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
      * @returns {DOMelement} the tab specified by id, null if not found
      */
     _getTab: function(id) {
-        var i, tab;
-
-        for (i = 0; i < this._tabitems.length; i++) {
-            tab = this._tabitems[i];
-            if (tab.querySelector('a').hash === '#' + id)
-                return tab;
+        for (var i = 0; i < this._tabitems.length; i++) {
+            if (this._tabitems[i]._id === id)
+                return this._tabitems[i];
         }
 
         return null;
