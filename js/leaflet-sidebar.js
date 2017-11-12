@@ -13,6 +13,7 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
 
     options: {
         autopan: false,
+        id: '',
         position: 'left'
     },
 
@@ -20,47 +21,50 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
      * Create a new sidebar on this object.
      *
      * @constructor
-     * @param {string} id - The id of the sidebar element (without the # character)
      * @param {Object} [options] - Optional options object
      * @param {string} [options.autopan=false] - whether to move the map when opening the sidebar to make maintain the visible center point
      * @param {string} [options.position=left] - Position of the sidebar: 'left' or 'right'
+     * @param {string} [options.id] - ID of a predefined sidebar container that should be used
      */
-    initialize: function(id, options) {
-        var i, j, child, tabContainers, newContainer;
-
-        L.setOptions(this, options);
-
-        // Find sidebar HTMLElement, create it if none was found
-        this._sidebar = L.DomUtil.get(id);
-        if (this._sidebar === null) {
-            this._sidebar = L.DomUtil.create('div', 'sidebar collapsed');
-
-            // Add sidebar before map to position controls correctly
-            document.body.insertBefore(this._sidebar, document.body.firstChild);
+    initialize: function(options, deprecatedOptions) {
+        if (typeof options === 'string') {
+            console.warn('this syntax is deprecated. please use L.control.sidebar({ id }) now');
+            options = { id: options };
         }
 
-        // Attach .sidebar-left/right class
-        L.DomUtil.addClass(this._sidebar, 'sidebar-' + this.options.position);
+        L.setOptions(this, Object.assign({}, options, deprecatedOptions));
+        return this;
+    },
 
-        // Attach touch styling if necessary
-        if (L.Browser.touch)
-            L.DomUtil.addClass(this._sidebar, 'leaflet-touch');
+    /**
+     * Add this sidebar to the specified map.
+     *
+     * @param {L.Map} map
+     * @returns {Sidebar}
+     */
+    onAdd: function(map) {
+        var i, j, child, tabContainers, newContainer, container;
+
+        // Find sidebar HTMLElement via .sidebar, create it if none was found
+        container = L.DomUtil.get(this.options.id);
+        if (container == null)
+            container = L.DomUtil.create('div', 'sidebar collapsed');
 
         // Find paneContainer in DOM & store reference
-        this._paneContainer = this._sidebar.querySelector('div.sidebar-content');
+        this._paneContainer = container.querySelector('div.sidebar-content');
 
         // If none is found, create it
         if (this._paneContainer === null)
-            this._paneContainer = L.DomUtil.create('div', 'sidebar-content', this._sidebar);
+            this._paneContainer = L.DomUtil.create('div', 'sidebar-content', container);
 
         // Find tabContainerTop & tabContainerBottom in DOM & store reference
-        tabContainers = this._sidebar.querySelectorAll('ul.sidebar-tabs, div.sidebar-tabs > ul');
+        tabContainers = container.querySelectorAll('ul.sidebar-tabs, div.sidebar-tabs > ul');
         this._tabContainerTop    = tabContainers[0] || null;
         this._tabContainerBottom = tabContainers[1] || null;
 
         // If no container was found, create it
         if (this._tabContainerTop === null) {
-            newContainer = L.DomUtil.create('div', 'sidebar-tabs', this._sidebar);
+            newContainer = L.DomUtil.create('div', 'sidebar-tabs', container);
             newContainer.setAttribute('role', 'tablist');
             this._tabContainerTop = L.DomUtil.create('ul', '', newContainer);
         }
@@ -100,18 +104,6 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
                 }
             }
         }
-    },
-
-    /**
-     * Add this sidebar to the specified map.
-     *
-     * @param {L.Map} map
-     * @returns {Sidebar}
-     */
-    addTo: function(map) {
-        var i;
-
-        this._map = map;
 
         // resetting click listeners for tab & close buttons
         for (i = 0; i < this._tabitems.length; i++) {
@@ -122,6 +114,53 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
             this._closeClick(this._closeButtons[i], 'off');
             this._closeClick(this._closeButtons[i], 'on');
         }
+
+        return container;
+    },
+
+    /**
+     * Remove this sidebar from the map.
+     *
+     * @param {L.Map} map
+     * @returns {Sidebar}
+     */
+    onRemove: function (map) {
+        var i;
+
+        this._map = null;
+
+        // Remove click listeners for tab & close buttons
+        for (i = 0; i < this._tabitems.length - 1; i++)
+            this._tabClick(this._tabitems[i], 'off');
+
+        for (i = 0; i < this._closeButtons.length; i++)
+            this._closeClick(this._closeButtons[i], 'off');
+
+        return this;
+    },
+
+    /**
+     * @method addTo(map: Map): this
+     * Adds the control to the given map. Overrides the implementation of L.Control,
+     * changing the DOM mount target from map._controlContainer.topleft to map._container
+     */
+    addTo: function (map) {
+        this.remove(); // FIXME for leaflet 0.7, removeFrom()??
+        this._map = map;
+
+        this._sidebar = this.onAdd(map);
+
+        L.DomUtil.addClass(this._sidebar, 'leaflet-control');
+        L.DomUtil.addClass(this._sidebar, 'sidebar-' + this.getPosition());
+        if (L.Browser.touch)
+            L.DomUtil.addClass(this._sidebar, 'leaflet-touch');
+
+        // when adding to the map container, we should stop event propagation
+        L.DomEvent.disableScrollPropagation(this._sidebar);
+        L.DomEvent.disableClickPropagation(this._sidebar);
+
+        map._container.appendChild(this._sidebar);
+
         return this;
     },
 
@@ -135,27 +174,6 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
          console.log('removeFrom() has been deprecated, please use remove() instead as support for this function will be ending soon.');
          this.remove(map);
      },
-
-    /**
-     * Remove this sidebar from the map.
-     *
-     * @param {L.Map} map
-     * @returns {Sidebar}
-     */
-    remove: function (map) {
-        var i, child;
-
-        this._map = null;
-
-        // Remove click listeners for tab & close buttons
-        for (i = 0; i < this._tabitems.length - 1; i++)
-            this._tabClick(this._tabitems[i], 'off');
-
-        for (i = 0; this._closeButtons.length; i++)
-            this._closeClick(this._closeButtons[i], 'off');
-
-        return this;
-    },
 
     /**
      * Open sidebar (if it's closed) and show the specified tab.
@@ -459,12 +477,12 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
  * @example
  * var sidebar = L.control.sidebar({ id: 'sidebar' }).addTo(map);
  *
- * @param {string} id - The id of the sidebar element (without the # character)
  * @param {Object} [options] - Optional options object
  * @param {string} [options.autopan=false] - whether to move the map when opening the sidebar to make maintain the visible center point
  * @param {string} [options.position=left] - Position of the sidebar: 'left' or 'right'
+ * @param {string} [options.id] - ID of a predefined sidebar container that should be used
  * @returns {Sidebar} A new sidebar instance
  */
-L.control.sidebar = function(id, options) {
-    return new L.Control.Sidebar(id, options);
+L.control.sidebar = function(options, deprecated) {
+    return new L.Control.Sidebar(options, deprecated);
 };

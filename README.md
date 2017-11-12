@@ -20,8 +20,9 @@ leaflet-sidebar-v2 provides a simple API to dynamically modify the sidebar. All 
 The parameters object is fully optional. The default values are shown:
 
 ```js
-var sidebar = L.control.sidebar('sidebar', {
+var sidebar = L.control.sidebar({
     autopan: false,   // whether to maintain the centered map point when opening the sidebar
+    id: 'sidebar',    // the DOM ID of a predefined sidebar container which should be used
     position: 'left', // left or right
 }).addTo(map);
 ```
@@ -39,7 +40,7 @@ var panelContent = {
 sidebar.addPanel(panelContent);
 
 /* add an external link */
-sidbar.addPanel({
+sidebar.addPanel({
     id: 'ghlink',
     tab: '<i class="fa fa-github"></i>',
     link: 'https://github.com/nickpeihl/leaflet-sidebar-v2',
