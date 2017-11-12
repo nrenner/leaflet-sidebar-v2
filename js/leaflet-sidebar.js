@@ -12,6 +12,7 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
     includes: L.Evented ? L.Evented.prototype : L.Mixin.Events,
 
     options: {
+        autopan: false,
         position: 'left'
     },
 
@@ -21,6 +22,7 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
      * @constructor
      * @param {string} id - The id of the sidebar element (without the # character)
      * @param {Object} [options] - Optional options object
+     * @param {string} [options.autopan=false] - whether to move the map when opening the sidebar to make maintain the visible center point
      * @param {string} [options.position=left] - Position of the sidebar: 'left' or 'right'
      */
     initialize: function(id, options) {
@@ -32,7 +34,7 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
         this._sidebar = L.DomUtil.get(id);
         if (this._sidebar === null) {
             this._sidebar = L.DomUtil.create('div', 'sidebar collapsed');
-            
+
             // Add sidebar before map to position controls correctly
             document.body.insertBefore(this._sidebar, document.body.firstChild);
         }
@@ -193,6 +195,8 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
         if (L.DomUtil.hasClass(this._sidebar, 'collapsed')) {
             this.fire('opening');
             L.DomUtil.removeClass(this._sidebar, 'collapsed');
+            if (this.options.autopan)
+                L.DomUtil.addClass(this._map._mapPane, 'sidebar-shift');
         }
 
         return this;
@@ -217,6 +221,7 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
         if (!L.DomUtil.hasClass(this._sidebar, 'collapsed')) {
             this.fire('closing');
             L.DomUtil.addClass(this._sidebar, 'collapsed');
+            L.DomUtil.removeClass(this._map._mapPane, 'sidebar-shift');
         }
 
         return this;
@@ -439,10 +444,11 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
  * Create a new sidebar.
  *
  * @example
- * var sidebar = L.control.sidebar('sidebar').addTo(map);
+ * var sidebar = L.control.sidebar({ id: 'sidebar' }).addTo(map);
  *
  * @param {string} id - The id of the sidebar element (without the # character)
  * @param {Object} [options] - Optional options object
+ * @param {string} [options.autopan=false] - whether to move the map when opening the sidebar to make maintain the visible center point
  * @param {string} [options.position=left] - Position of the sidebar: 'left' or 'right'
  * @returns {Sidebar} A new sidebar instance
  */

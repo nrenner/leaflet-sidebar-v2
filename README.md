@@ -17,8 +17,13 @@ I wanted to `npm install` sidebar-v2 for a Leaflet project which required the `m
 leaflet-sidebar-v2 provides a simple API to dynamically modify the sidebar. All functions may be chained.
 
 #### creation
+The parameters object is fully optional. The default values are shown:
+
 ```js
-var sidebar = L.control.sidebar('sidebar').addTo(map);
+var sidebar = L.control.sidebar('sidebar', {
+    autopan: false,   // whether to maintain the centered map point when opening the sidebar
+    position: 'left', // left or right
+}).addTo(map);
 ```
 
 #### modification
