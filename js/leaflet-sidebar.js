@@ -29,8 +29,12 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
 
         // Find sidebar HTMLElement, create it if none was found
         this._sidebar = L.DomUtil.get(id);
-        if (this._sidebar === null)
-            this._sidebar = L.DomUtil.create('div', 'sidebar collapsed', document.body);
+        if (this._sidebar === null) {
+            this._sidebar = L.DomUtil.create('div', 'sidebar collapsed');
+            
+            // Add sidebar before map to position controls correctly
+            document.body.insertBefore(this._sidebar, document.body.firstChild);
+        }
 
         // Attach .sidebar-left/right class
         L.DomUtil.addClass(this._sidebar, 'sidebar-' + this.options.position);
@@ -54,6 +58,7 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
         // If no container was found, create it
         if (this._tabContainerTop === null) {
             newContainer = L.DomUtil.create('div', 'sidebar-tabs', this._sidebar);
+            newContainer.setAttribute('role', 'tablist');
             this._tabContainerTop = L.DomUtil.create('ul', '', newContainer);
         }
         if (this._tabContainerBottom === null) {
@@ -103,13 +108,15 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
 
         this._map = map;
 
-        // Add click listeners for tab & close buttons
-        for (i = 0; i < this._tabitems.length; i++)
+        // resetting click listeners for tab & close buttons
+        for (i = 0; i < this._tabitems.length; i++) {
+            this._tabClick(this._tabitems[i], 'off');
             this._tabClick(this._tabitems[i], 'on');
-
-        for (i = 0; i < this._closeButtons.length; i++)
+        }
+        for (i = 0; i < this._closeButtons.length; i++) {
+            this._closeClick(this._closeButtons[i], 'off');
             this._closeClick(this._closeButtons[i], 'on');
-
+        }
         return this;
     },
 
@@ -252,7 +259,7 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
         tab     = L.DomUtil.create('li', '');
         tabHref = L.DomUtil.create('a', '', tab);
         tabHref.href = '#' + data.id;
-        tabHref.role = 'tab';
+        tabHref.setAttribute('role', 'tab');
         tabHref.innerHTML = data.tab;
         tab._sidebar = this;
 
