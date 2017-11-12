@@ -32,6 +32,10 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
             options = { id: options };
         }
 
+        this._tabitems = [];
+        this._panes = [];
+        this._closeButtons = [];
+
         L.setOptions(this, Object.assign({}, options, deprecatedOptions));
         return this;
     },
@@ -74,7 +78,6 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
         }
 
         // Store Tabs in Collection for easier iteration
-        this._tabitems = [];
         for (i = 0; i < this._tabContainerTop.children.length; i++) {
             child = this._tabContainerTop.children[i];
             child._sidebar = this;
@@ -89,8 +92,6 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
         }
 
         // Store Panes in Collection for easier iteration
-        this._panes = [];
-        this._closeButtons = [];
         for (i = 0; i < this._paneContainer.children.length; i++) {
             child = this._paneContainer.children[i];
             if (child.tagName === 'DIV' &&
@@ -128,6 +129,9 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
         var i;
 
         this._map = null;
+        this._tabitems = [];
+        this._panes = [];
+        this._closeButtons = [];
 
         // Remove click listeners for tab & close buttons
         for (i = 0; i < this._tabitems.length - 1; i++)
@@ -145,7 +149,7 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
      * changing the DOM mount target from map._controlContainer.topleft to map._container
      */
     addTo: function (map) {
-        this.remove(); // FIXME for leaflet 0.7, removeFrom()??
+        this.onRemove();
         this._map = map;
 
         this._sidebar = this.onAdd(map);
@@ -173,10 +177,10 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
      */
      removeFrom: function(map) {
          console.log('removeFrom() has been deprecated, please use remove() instead as support for this function will be ending soon.');
-         this.remove(map);
+         this.onRemove(map);
      },
 
-    /**
+   /**
      * Open sidebar (if it's closed) and show the specified tab.
      *
      * @param {string} id - The ID of the tab to show (without the # character)
