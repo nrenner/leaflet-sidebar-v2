@@ -159,7 +159,8 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
         L.DomEvent.disableScrollPropagation(this._sidebar);
         L.DomEvent.disableClickPropagation(this._sidebar);
 
-        map._container.appendChild(this._sidebar);
+        // insert as first child of map container (important for css)
+        map._container.insertBefore(this._sidebar, map._container.firstChild);
 
         return this;
     },
