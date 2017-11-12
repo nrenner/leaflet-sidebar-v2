@@ -22,8 +22,6 @@ $content-bg: rgba(255, 255, 255, 0.95) !default;
 $content-padding-vertical: 10px !default;
 $content-padding-horizontal: 20px !default;
 
-$move-map-in-xs: true !default;
-
 .sidebar {
     position: absolute;
 
@@ -246,23 +244,5 @@ $move-map-in-xs: true !default;
 
     .sidebar-right & {
         left: 0;
-    }
-}
-
-@if $move-map-in-xs {
-    .sidebar-left ~ .sidebar-map {
-        margin-left: $tab-size;
-
-        @media(min-width:$threshold-sm) {
-            margin-left: 0;
-        }
-    }
-
-    .sidebar-right ~ .sidebar-map {
-        margin-right: $tab-size;
-
-        @media(min-width:$threshold-sm) {
-            margin-right: 0;
-        }
     }
 }
