@@ -195,8 +195,7 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
         if (L.DomUtil.hasClass(this._sidebar, 'collapsed')) {
             this.fire('opening');
             L.DomUtil.removeClass(this._sidebar, 'collapsed');
-            if (this.options.autopan)
-                L.DomUtil.addClass(this._map._mapPane, 'sidebar-shift');
+            if (this.options.autopan) this._panMap('open');
         }
 
         return this;
@@ -221,7 +220,7 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
         if (!L.DomUtil.hasClass(this._sidebar, 'collapsed')) {
             this.fire('closing');
             L.DomUtil.addClass(this._sidebar, 'collapsed');
-            L.DomUtil.removeClass(this._map._mapPane, 'sidebar-shift');
+            if (this.options.autopan) this._panMap('close');
         }
 
         return this;
@@ -437,7 +436,21 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
         }
 
         return null;
-    }
+    },
+
+    /**
+     * Helper for autopan: Pans the map for open/close events
+     *
+     * @param {String} [openClose] The behaviour to enact ('open' | 'close')
+     */
+   _panMap: function(openClose) {
+        var panWidth = Number.parseInt(L.DomUtil.getStyle(this._sidebar, 'max-width')) / 2;
+        if (
+            openClose === 'open' && this.options.position === 'left' ||
+            openClose === 'close' && this.options.position === 'right'
+        ) panWidth *= -1;
+        this._map.panBy([panWidth, 0], { duration: 0.5 });
+   }
 });
 
 /**

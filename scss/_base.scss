@@ -48,14 +48,17 @@ $move-map-in-xs: true !default;
 
     @media(min-width:$threshold-sm) and (max-width:$threshold-md - 1px) {
         width: $width-sm;
+        max-width: $width-sm;
     }
 
     @media(min-width:$threshold-md) and (max-width:$threshold-lg - 1px) {
         width: $width-md;
+        max-width: $width-md;
     }
 
     @media(min-width:$threshold-lg) {
         width: $width-lg;
+        max-width: $width-lg;
     }
 }
 
@@ -261,38 +264,5 @@ $move-map-in-xs: true !default;
         @media(min-width:$threshold-sm) {
             margin-right: 0;
         }
-    }
-}
-
-// map offset move for opened sidebar
-.leaflet-map-pane {
-    transition: margin $sidebar-transition;
-}
-
-.sidebar-left ~ .leaflet-map-pane.sidebar-shift {
-    @media(min-width:$threshold-sm) and (max-width:$threshold-md - 1px) {
-        margin-left: $width-sm / 2;
-    }
-
-    @media(min-width:$threshold-md) and (max-width:$threshold-lg - 1px) {
-        margin-left: $width-md / 2;
-    }
-
-    @media(min-width:$threshold-lg) {
-        margin-left: $width-lg / 2;
-    }
-}
-
-.sidebar-right ~ .leaflet-map-pane.sidebar-shift {
-    @media(min-width:$threshold-sm) and (max-width:$threshold-md - 1px) {
-        margin-left: - $width-sm / 2;
-    }
-
-    @media(min-width:$threshold-md) and (max-width:$threshold-lg - 1px) {
-        margin-left: - $width-md / 2;
-    }
-
-    @media(min-width:$threshold-lg) {
-        margin-left: - $width-lg / 2;
     }
 }
