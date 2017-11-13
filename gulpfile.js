@@ -73,7 +73,7 @@ gulp.task('zip', ['minify'], function() {
 
 // Watch JS + CSS Files
 gulp.task('watch', ['lint', 'minify'], function(){
-  gulp.watch('js/*.js', ['lint:js', 'minify:js']);
+  gulp.watch('js/leaflet-sidebar.js', ['lint:js', 'minify:js']);
   gulp.watch('scss/*.scss', ['lint:css', 'minify:css']);
 });
 
