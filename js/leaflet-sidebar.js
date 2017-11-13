@@ -12,6 +12,7 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
     includes: L.Evented ? L.Evented.prototype : L.Mixin.Events,
 
     options: {
+        autopan: false,
         position: 'left'
     },
 
@@ -21,6 +22,7 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
      * @constructor
      * @param {string} id - The id of the sidebar element (without the # character)
      * @param {Object} [options] - Optional options object
+     * @param {string} [options.autopan=false] - whether to move the map when opening the sidebar to make maintain the visible center point
      * @param {string} [options.position=left] - Position of the sidebar: 'left' or 'right'
      */
     initialize: function(id, options) {
@@ -32,7 +34,7 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
         this._sidebar = L.DomUtil.get(id);
         if (this._sidebar === null) {
             this._sidebar = L.DomUtil.create('div', 'sidebar collapsed');
-            
+
             // Add sidebar before map to position controls correctly
             document.body.insertBefore(this._sidebar, document.body.firstChild);
         }
@@ -72,11 +74,13 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
         for (i = 0; i < this._tabContainerTop.children.length; i++) {
             child = this._tabContainerTop.children[i];
             child._sidebar = this;
+            child._id = child.querySelector('a').hash.slice(1); // FIXME: this could break for links!
             this._tabitems.push(child);
         }
         for (i = 0; i < this._tabContainerBottom.children.length; i++) {
             child = this._tabContainerBottom.children[i];
             child._sidebar = this;
+            child._id = child.querySelector('a').hash.slice(1); // FIXME: this could break for links!
             this._tabitems.push(child);
         }
 
@@ -191,6 +195,7 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
         if (L.DomUtil.hasClass(this._sidebar, 'collapsed')) {
             this.fire('opening');
             L.DomUtil.removeClass(this._sidebar, 'collapsed');
+            if (this.options.autopan) this._panMap('open');
         }
 
         return this;
@@ -215,6 +220,7 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
         if (!L.DomUtil.hasClass(this._sidebar, 'collapsed')) {
             this.fire('closing');
             L.DomUtil.addClass(this._sidebar, 'collapsed');
+            if (this.options.autopan) this._panMap('close');
         }
 
         return this;
@@ -237,51 +243,57 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
      *                                       on the top or the bottom of the sidebar. 'top' or 'bottom'
      * @param {HTMLString} {DOMnode} [data.tab]  content of the tab item, as HTMLstring or DOM node
      * @param {HTMLString} {DOMnode} [data.pane] content of the panel, as HTMLstring or DOM node
-     * @param {String} [data.id] the ID for the new Panel, must be unique for the whole page
+     * @param {String} {Function} [data.button] URL to an (external) link that will be opened instead of a panel, or a click listener function
+     * @param {bool} [data.disabled] If the tab should be disabled by default
      *
      * @returns {L.Control.Sidebar}
      */
     addPanel: function(data) {
         var i, pane, tab, tabHref, closeButtons;
 
-        // Create pane node
-        if (typeof data.pane === 'string') {
-            // pane is given as HTML string
-            pane = L.DomUtil.create('DIV', 'sidebar-pane', this._paneContainer);
-            pane.innerHTML = data.pane;
-        } else {
-            // pane is given as DOM object
-            pane = data.pane;
-            this._paneContainer.appendChild(pane);
-        }
-        pane.id = data.id;
-
         // Create tab node
-        tab     = L.DomUtil.create('li', '');
+        tab = L.DomUtil.create('li', data.disabled ? 'disabled' : '');
         tabHref = L.DomUtil.create('a', '', tab);
         tabHref.href = '#' + data.id;
         tabHref.setAttribute('role', 'tab');
         tabHref.innerHTML = data.tab;
         tab._sidebar = this;
+        tab._id = data.id;
+        tab._button = data.button; // to allow links to be disabled, the href cannot be used
 
+        // append it to the DOM and store JS references
         if (data.position === 'bottom')
             this._tabContainerBottom.appendChild(tab);
         else
             this._tabContainerTop.appendChild(tab);
 
-        // append new content to internal collections
-        this._panes.push(pane);
         this._tabitems.push(tab);
+
+        // Create pane node
+        if (data.pane) {
+            if (typeof data.pane === 'string') {
+                // pane is given as HTML string
+                pane = L.DomUtil.create('DIV', 'sidebar-pane', this._paneContainer);
+                pane.innerHTML = data.pane;
+            } else {
+                // pane is given as DOM object
+                pane = data.pane;
+                this._paneContainer.appendChild(pane);
+            }
+            pane.id = data.id;
+
+            this._panes.push(pane);
+
+            // Save references to close buttons & register click listeners
+            closeButtons = pane.querySelectorAll('.sidebar-close');
+            for (i = 0; i < closeButtons.length; i++) {
+                this._closeButtons.push(closeButtons[i]);
+                this._closeClick(closeButtons[i], 'on');
+            }
+        }
 
         // Register click listeners, if the sidebar is on the map
         this._tabClick(tab, 'on');
-
-        // Save references to close buttons & register click listeners
-        closeButtons = pane.querySelectorAll('.sidebar-close');
-        for (i = 0; i < closeButtons.length; i++) {
-            this._closeButtons.push(closeButtons[i]);
-            this._closeClick(closeButtons[i], 'on');
-        }
 
         return this;
     },
@@ -296,26 +308,33 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
      * @returns {L.Control.Sidebar}
      */
     removePanel: function(id) {
-        var i, j, pane, closeButtons;
+        var i, j, tab, pane, closeButtons;
 
-        // find the panel by ID
+        // find the tab & panel by ID, remove them, and clean up
+        for (i = 0; i < this._tabitems.length; i++) {
+            if (this._tabitems[i]._id === id) {
+                tab = this._tabitems[i];
+
+                // Remove click listeners
+                this._tabClick(tab, 'off');
+
+                tab.remove();
+                this._tabitems.slice(i, 1);
+                break;
+            }
+        }
+
         for (i = 0; i < this._panes.length; i++) {
             if (this._panes[i].id === id) {
                 pane = this._panes[i];
-
-                // Remove click listeners
-                this._tabClick(this.tabitems[i], 'off');
-
                 closeButtons = pane.querySelectorAll('.sidebar-close');
+                // FIXME: broken for loop. close button logic?
                 for (j = 0; i < closeButtons.length; i++) {
                     this._closeClick(closeButtons[j], 'off');
                 }
 
-                // remove both tab and panel, ASSUMING they have the same index!
                 pane.remove();
                 this._panes.slice(i, 1);
-                this._tabitems[i].remove();
-                this._tabitems.slice(i, 1);
 
                 break;
             }
@@ -363,11 +382,18 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
         if (link.hasAttribute('href') && link.getAttribute('href')[0] !== '#')
             return;
 
-        var onTabClick = function() {
-            if (L.DomUtil.hasClass(this, 'active'))
+        var onTabClick = function(e) {
+            // `this` points to the tab DOM element!
+            if (L.DomUtil.hasClass(this, 'active')) {
                 this._sidebar.close();
-            else if (!L.DomUtil.hasClass(this, 'disabled'))
-                this._sidebar.open(this.querySelector('a').hash.slice(1));
+            } else if (!L.DomUtil.hasClass(this, 'disabled')) {
+                if (typeof this._button === 'string') // an url
+                    window.location.href = this._button;
+                else if (typeof this._button === 'function') // a clickhandler
+                    this._button(e);
+                else // a normal pane
+                    this._sidebar.open(this.querySelector('a').hash.slice(1));
+            }
         };
 
         if (on === 'on') {
@@ -407,26 +433,38 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
      * @returns {DOMelement} the tab specified by id, null if not found
      */
     _getTab: function(id) {
-        var i, tab;
-
-        for (i = 0; i < this._tabitems.length; i++) {
-            tab = this._tabitems[i];
-            if (tab.querySelector('a').hash === '#' + id)
-                return tab;
+        for (var i = 0; i < this._tabitems.length; i++) {
+            if (this._tabitems[i]._id === id)
+                return this._tabitems[i];
         }
 
         return null;
-    }
+    },
+
+    /**
+     * Helper for autopan: Pans the map for open/close events
+     *
+     * @param {String} [openClose] The behaviour to enact ('open' | 'close')
+     */
+   _panMap: function(openClose) {
+        var panWidth = Number.parseInt(L.DomUtil.getStyle(this._sidebar, 'max-width')) / 2;
+        if (
+            openClose === 'open' && this.options.position === 'left' ||
+            openClose === 'close' && this.options.position === 'right'
+        ) panWidth *= -1;
+        this._map.panBy([panWidth, 0], { duration: 0.5 });
+   }
 });
 
 /**
  * Create a new sidebar.
  *
  * @example
- * var sidebar = L.control.sidebar('sidebar').addTo(map);
+ * var sidebar = L.control.sidebar({ id: 'sidebar' }).addTo(map);
  *
  * @param {string} id - The id of the sidebar element (without the # character)
  * @param {Object} [options] - Optional options object
+ * @param {string} [options.autopan=false] - whether to move the map when opening the sidebar to make maintain the visible center point
  * @param {string} [options.position=left] - Position of the sidebar: 'left' or 'right'
  * @returns {Sidebar} A new sidebar instance
  */

@@ -2,14 +2,11 @@
 
 A responsive sidebar _just_ for [Leaflet](http://leafletjs.com/). A fork of [sidebar-v2](http://turbo87.github.io/sidebar-v2) that only contains the necessary ingredients for use in Leaflet.
 
-![Demo](doc/sidebar-v2.gif)
-
-## [Leaflet](http://leafletjs.com/)
-
-![Sidebar collapsed](doc/leaflet-1.png) ![Sidebar extended](doc/leaflet-2.png)
+![Demo](doc/leaflet-sidebar-v2.gif)
 
 ## Why the Fork?
 I wanted to `npm install` sidebar-v2 for a Leaflet project which required the `main` and `style` fields in [`package.json`](package.json). This fork removes the Google Maps and OpenLayers files since I don't need them in the npm package.
+Also functionality is extended: Featuring a JS API for panel modification and an "autopan" feature.
 
 ## Usage
 
@@ -17,8 +14,13 @@ I wanted to `npm install` sidebar-v2 for a Leaflet project which required the `m
 leaflet-sidebar-v2 provides a simple API to dynamically modify the sidebar. All functions may be chained.
 
 #### creation
+The parameters object is fully optional. The default values are shown:
+
 ```js
-var sidebar = L.control.sidebar('sidebar').addTo(map);
+var sidebar = L.control.sidebar('sidebar', {
+    autopan: false,   // whether to maintain the centered map point when opening the sidebar
+    position: 'left', // left or right
+}).addTo(map);
 ```
 
 #### modification
@@ -32,6 +34,13 @@ var panelContent = {
     position: 'bottom'                  // vertical alignment, 'top' or 'bottom'
 };
 sidebar.addPanel(panelContent);
+
+/* add an external link */
+sidbar.addPanel({
+    id: 'ghlink',
+    tab: '<i class="fa fa-github"></i>',
+    link: 'https://github.com/nickpeihl/leaflet-sidebar-v2',
+})
 
 /* remove a panel */
 sidebar.removePanel('userinfo');

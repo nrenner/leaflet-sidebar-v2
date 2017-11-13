@@ -6,8 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
     <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.css" />
-    <!--[if lte IE 8]><link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.ie.css" /><![endif]-->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css"
+        integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ=="
+        crossorigin=""/>
 
     <link rel="stylesheet" href="../css/leaflet-sidebar.css" />
 
@@ -32,9 +33,11 @@
 
     <div id="map" class="sidebar-map"></div>
 
-    <a href="https://github.com/Turbo87/sidebar-v2/"><img style="position: fixed; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"></a>
+    <a href="https://github.com/nickpeihl/leaflet-sidebar-v2/"><img style="position: fixed; top: 0; right: 0; border: 0; z-index: 1000;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"></a>
 
-    <script src="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"
+        integrity="sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log=="
+        crossorigin=""></script>
     <script src="../js/leaflet-sidebar.js"></script>
 
     <script>
@@ -57,22 +60,37 @@
         };
 
         sidebar
+            // add a button pointing to a link
+            .addPanel({
+                id:   'home',
+                tab:  '<i class="fa fa-arrow-left"></i>',
+                button: './'
+            })
+            // add a button with click listener
+            .addPanel({
+                id:   'info',
+                tab:  '<i class="fa fa-info"></i>',
+                button: function(e) { alert('info tab clicked') }
+            })
+            // add a panel that is disabled
+            .addPanel({
+                id:   'mail',
+                tab:  '<i class="fa fa-envelope"></i>',
+                pane: '<h1 class="sidebar-header">Mails<div class="sidebar-close">',
+                disabled: true,
+            })
+            // add a panel at the bottom
             .addPanel({
                 id:   'settings',
                 tab:  '<i class="fa fa-gear"></i>',
-                pane: '<h1 class="sidebar-header">Settings<div class="sidebar-close"><i class="fa fa-caret-left"></i></div></h1><br><button onclick="sidebar.enablePanel(\'home\')">enable home</button><button onclick="sidebar.disablePanel(\'home\')">disable home</button><button onclick="addUser()">add user</button>',
+                pane: '<h1 class="sidebar-header">Settings<div class="sidebar-close"><i class="fa fa-caret-left"></i></div></h1><br><button onclick="sidebar.enablePanel(\'mail\')">enable mails panel</button><button onclick="sidebar.disablePanel(\'mail\')">disable mails panel</button><br><button onclick="addUser()">add user</button>',
                 position: 'bottom'
             })
-            .addPanel({
-                id:   'home',
-                tab:  '<i class="fa fa-home"></i>',
-                pane: '<h1 class="sidebar-header">Home<div class="sidebar-close"><i class="fa fa-caret-left"></i></div></h1>'
-            })
-            .disablePanel('home')
+            // open the settings panel
             .open('settings');
 
         function addUser() {
-    		var num = userpanel.id.slice(4);
+            var num = Number.parseInt(userpanel.id.slice(4));
             userpanel.id = 'user' + (num + 1); //increment number by 1
             sidebar.addPanel(userpanel);
         }

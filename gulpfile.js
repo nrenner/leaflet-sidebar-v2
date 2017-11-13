@@ -12,7 +12,7 @@ var basename = pkg.name + '-' + pkg.version;
 
 // SASS compilation
 gulp.task('sass', function () {
-    gulp.src('scss/*sidebar.scss')
+    return gulp.src('scss/*sidebar.scss')
         .pipe(sass().on('error', sass.logError))
         .pipe(gulp.dest('css'));
 });
