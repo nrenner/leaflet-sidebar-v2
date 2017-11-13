@@ -23,20 +23,21 @@
     "url": "https://github.com/nickpeihl/leaflet-sidebar-v2.git"
   },
   "devDependencies": {
-    "gulp": "^3.8.11",
-    "gulp-clean-css": "^2.0.13",
-    "gulp-concat": "^2.6.0",
+    "gulp": "^3.9.1",
+    "gulp-clean-css": "^3.9.0",
     "gulp-csslint": "^1.0.0",
-    "gulp-jshint": "^2.0.2",
-    "gulp-minify-css": "~1.2.4",
-    "gulp-rename": "~1.2.0",
+    "gulp-jshint": "^2.0.4",
+    "gulp-rename": "^1.2.2",
     "gulp-sass": "^3.1.0",
-    "gulp-uglify": "^2.0.0",
-    "gulp-zip": "^3.2.0",
-    "jshint": "^2.9.4"
+    "gulp-uglify": "^3.0.0",
+    "gulp-zip": "^4.0.0",
+    "jshint": "^2.9.5"
   },
   "scripts": {
     "test": "gulp lint",
+    "lint": "gulp lint",
+    "minify": "gulp minify",
+    "zip": "gulp zip",
     "watch": "gulp watch"
   }
 }
