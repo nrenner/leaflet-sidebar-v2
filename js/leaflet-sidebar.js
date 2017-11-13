@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * @name Sidebar
  * @class L.Control.Sidebar
@@ -8,7 +9,7 @@
  * @see L.control.sidebar
  */
 L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
-    includes: L.Mixin.Events,
+    includes: L.Evented ? L.Evented.prototype : L.Mixin.Events,
 
     options: {
         position: 'left'
@@ -358,6 +359,9 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
      * @param {String} [on] 'on' or 'off'
      */
     _tabClick: function(tab, on) {
+        var link = tab.querySelector('a');
+        if (link.hasAttribute('href') && link.getAttribute('href')[0] !== '#')
+            return;
 
         var onTabClick = function() {
             if (L.DomUtil.hasClass(this, 'active'))
