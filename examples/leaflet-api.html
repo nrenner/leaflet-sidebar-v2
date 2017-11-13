@@ -33,7 +33,7 @@
 
     <div id="map"></div>
 
-    <a href="https://github.com/nickpeihl/leaflet-sidebar-v2/"><img style="position: fixed; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"></a>
+    <a href="https://github.com/nickpeihl/leaflet-sidebar-v2/"><img style="position: fixed; top: 0; right: 0; border: 0; z-index: 1000;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"></a>
 
     <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"
         integrity="sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log=="
@@ -64,17 +64,27 @@
         };
 
         sidebar
+            // add a button pointing to a link
             .addPanel({
                 id:   'home',
                 tab:  '<i class="fa fa-arrow-left"></i>',
-                link: './'
+                button: './'
             })
+            // add a button with click listener
+            .addPanel({
+                id:   'info',
+                tab:  '<i class="fa fa-info"></i>',
+                button: function(e) { alert('info tab clicked') }
+            })
+            // add a panel that is disabled
             .addPanel({
                 id:   'mail',
                 tab:  '<i class="fa fa-envelope"></i>',
                 title: 'Messages',
                 pane: '<p>Lorem ipsum dolor amet</p>',
+                disabled: true,
             })
+            // add a panel at the bottom
             .addPanel({
                 id:   'settings',
                 tab:  '<i class="fa fa-gear"></i>',
@@ -82,7 +92,7 @@
                 pane: '<p><button onclick="sidebar.enablePanel(\'mail\')">enable mails panel</button><button onclick="sidebar.disablePanel(\'mail\')">disable mails panel</button></p><p><button onclick="addUser()">add user</button></b>',
                 position: 'bottom'
             })
-            .disablePanel('mail')
+            // open the settings panel
             .open('settings');
 
         function addUser() {

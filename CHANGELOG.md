@@ -1,4 +1,19 @@
 # Changelog
+This project adheres to semantic versioning.
+
+## v1.1.0 (2017-11-13)
+- add autopan feature
+- allow to add buttons with URLs or click handlers as tabs
+- restructure examples & readme
+
+## v1.0.2 (2017-11-13)
+- fix build files in package
+
+## v1.0.1 (2017-11-13)
+- hide scrollbar when collapsed
+- add support for L.Evented for leaflet 1.2.0+
+- fix chrome css bug
+- all URLs in tab href
 
 ## v1.0.0 (2016-10-31)
 ### Added
