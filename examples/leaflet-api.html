@@ -60,23 +60,33 @@
         };
 
         sidebar
+            // add a button pointing to a link
             .addPanel({
                 id:   'home',
                 tab:  '<i class="fa fa-arrow-left"></i>',
-                link: './'
+                button: './'
             })
+            // add a button with click listener
+            .addPanel({
+                id:   'info',
+                tab:  '<i class="fa fa-info"></i>',
+                button: function(e) { alert('info tab clicked') }
+            })
+            // add a panel that is disabled
             .addPanel({
                 id:   'mail',
                 tab:  '<i class="fa fa-envelope"></i>',
                 pane: '<h1 class="sidebar-header">Mails<div class="sidebar-close">',
+                disabled: true,
             })
+            // add a panel at the bottom
             .addPanel({
                 id:   'settings',
                 tab:  '<i class="fa fa-gear"></i>',
                 pane: '<h1 class="sidebar-header">Settings<div class="sidebar-close"><i class="fa fa-caret-left"></i></div></h1><br><button onclick="sidebar.enablePanel(\'mail\')">enable mails panel</button><button onclick="sidebar.disablePanel(\'mail\')">disable mails panel</button><br><button onclick="addUser()">add user</button>',
                 position: 'bottom'
             })
-            .disablePanel('mail')
+            // open the settings panel
             .open('settings');
 
         function addUser() {

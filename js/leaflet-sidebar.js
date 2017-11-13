@@ -243,7 +243,8 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
      *                                       on the top or the bottom of the sidebar. 'top' or 'bottom'
      * @param {HTMLString} {DOMnode} [data.tab]  content of the tab item, as HTMLstring or DOM node
      * @param {HTMLString} {DOMnode} [data.pane] content of the panel, as HTMLstring or DOM node
-     * @param {String} [data.link] URL to an (external) link that will be opened instead of a panel
+     * @param {String} {Function} [data.button] URL to an (external) link that will be opened instead of a panel, or a click listener function
+     * @param {bool} [data.disabled] If the tab should be disabled by default
      *
      * @returns {L.Control.Sidebar}
      */
@@ -251,14 +252,14 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
         var i, pane, tab, tabHref, closeButtons;
 
         // Create tab node
-        tab     = L.DomUtil.create('li', '');
+        tab = L.DomUtil.create('li', data.disabled ? 'disabled' : '');
         tabHref = L.DomUtil.create('a', '', tab);
         tabHref.href = '#' + data.id;
         tabHref.setAttribute('role', 'tab');
         tabHref.innerHTML = data.tab;
         tab._sidebar = this;
         tab._id = data.id;
-        tab._url = data.link; // to allow links to be disabled, the href cannot be used
+        tab._button = data.button; // to allow links to be disabled, the href cannot be used
 
         // append it to the DOM and store JS references
         if (data.position === 'bottom')
@@ -381,14 +382,16 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
         if (link.hasAttribute('href') && link.getAttribute('href')[0] !== '#')
             return;
 
-        var onTabClick = function() {
+        var onTabClick = function(e) {
             // `this` points to the tab DOM element!
             if (L.DomUtil.hasClass(this, 'active')) {
                 this._sidebar.close();
             } else if (!L.DomUtil.hasClass(this, 'disabled')) {
-                if (this._url)
-                    window.location.href = this._url;
-                else
+                if (typeof this._button === 'string') // an url
+                    window.location.href = this._button;
+                else if (typeof this._button === 'function') // a clickhandler
+                    this._button(e);
+                else // a normal pane
                     this._sidebar.open(this.querySelector('a').hash.slice(1));
             }
         };
