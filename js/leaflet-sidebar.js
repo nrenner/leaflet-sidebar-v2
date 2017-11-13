@@ -5,7 +5,10 @@
  * @extends L.Control
  * @param {string} id - The id of the sidebar element (without the # character)
  * @param {Object} [options] - Optional options object
+ * @param {string} [options.autopan=false] - whether to move the map when opening the sidebar to make maintain the visible center point
  * @param {string} [options.position=left] - Position of the sidebar: 'left' or 'right'
+ * @param {string} [options.id] - ID of a predefined sidebar container that should be used
+ * @param {boolean} [data.close=true] Whether to add a close button to the pane header
  * @see L.control.sidebar
  */
 L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
@@ -13,6 +16,8 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
 
     options: {
         autopan: false,
+        closeButton: true,
+        id: '',
         position: 'left'
     },
 
@@ -20,47 +25,55 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
      * Create a new sidebar on this object.
      *
      * @constructor
-     * @param {string} id - The id of the sidebar element (without the # character)
      * @param {Object} [options] - Optional options object
      * @param {string} [options.autopan=false] - whether to move the map when opening the sidebar to make maintain the visible center point
      * @param {string} [options.position=left] - Position of the sidebar: 'left' or 'right'
+     * @param {string} [options.id] - ID of a predefined sidebar container that should be used
+     * @param {bool} [data.close=true] Whether to add a close button to the pane header
      */
-    initialize: function(id, options) {
-        var i, j, child, tabContainers, newContainer;
-
-        L.setOptions(this, options);
-
-        // Find sidebar HTMLElement, create it if none was found
-        this._sidebar = L.DomUtil.get(id);
-        if (this._sidebar === null) {
-            this._sidebar = L.DomUtil.create('div', 'sidebar collapsed');
-
-            // Add sidebar before map to position controls correctly
-            document.body.insertBefore(this._sidebar, document.body.firstChild);
+    initialize: function(options, deprecatedOptions) {
+        if (typeof options === 'string') {
+            console.warn('this syntax is deprecated. please use L.control.sidebar({ id }) now');
+            options = { id: options };
         }
 
-        // Attach .sidebar-left/right class
-        L.DomUtil.addClass(this._sidebar, 'sidebar-' + this.options.position);
+        this._tabitems = [];
+        this._panes = [];
+        this._closeButtons = [];
 
-        // Attach touch styling if necessary
-        if (L.Browser.touch)
-            L.DomUtil.addClass(this._sidebar, 'leaflet-touch');
+        L.setOptions(this, Object.assign({}, options, deprecatedOptions));
+        return this;
+    },
+
+    /**
+     * Add this sidebar to the specified map.
+     *
+     * @param {L.Map} map
+     * @returns {Sidebar}
+     */
+    onAdd: function(map) {
+        var i, j, child, tabContainers, newContainer, container;
+
+        // Find sidebar HTMLElement via .sidebar, create it if none was found
+        container = L.DomUtil.get(this.options.id);
+        if (container == null)
+            container = L.DomUtil.create('div', 'sidebar collapsed');
 
         // Find paneContainer in DOM & store reference
-        this._paneContainer = this._sidebar.querySelector('div.sidebar-content');
+        this._paneContainer = container.querySelector('div.sidebar-content');
 
         // If none is found, create it
         if (this._paneContainer === null)
-            this._paneContainer = L.DomUtil.create('div', 'sidebar-content', this._sidebar);
+            this._paneContainer = L.DomUtil.create('div', 'sidebar-content', container);
 
         // Find tabContainerTop & tabContainerBottom in DOM & store reference
-        tabContainers = this._sidebar.querySelectorAll('ul.sidebar-tabs, div.sidebar-tabs > ul');
+        tabContainers = container.querySelectorAll('ul.sidebar-tabs, div.sidebar-tabs > ul');
         this._tabContainerTop    = tabContainers[0] || null;
         this._tabContainerBottom = tabContainers[1] || null;
 
         // If no container was found, create it
         if (this._tabContainerTop === null) {
-            newContainer = L.DomUtil.create('div', 'sidebar-tabs', this._sidebar);
+            newContainer = L.DomUtil.create('div', 'sidebar-tabs', container);
             newContainer.setAttribute('role', 'tablist');
             this._tabContainerTop = L.DomUtil.create('ul', '', newContainer);
         }
@@ -70,7 +83,6 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
         }
 
         // Store Tabs in Collection for easier iteration
-        this._tabitems = [];
         for (i = 0; i < this._tabContainerTop.children.length; i++) {
             child = this._tabContainerTop.children[i];
             child._sidebar = this;
@@ -85,8 +97,6 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
         }
 
         // Store Panes in Collection for easier iteration
-        this._panes = [];
-        this._closeButtons = [];
         for (i = 0; i < this._paneContainer.children.length; i++) {
             child = this._paneContainer.children[i];
             if (child.tagName === 'DIV' &&
@@ -95,33 +105,68 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
 
                 // Save references to close buttons
                 var closeButtons = child.querySelectorAll('.sidebar-close');
-                for (j = 0, len = closeButtons.length; j < len; j++) {
-                    this._closeButtons.push(closeButtons[j]);
+                if (closeButtons.length) {
+                    this._closeButtons.push(closeButtons[closeButtons.length - 1]);
+                    this._closeClick(closeButtons[closeButtons.length - 1], 'on');
                 }
             }
         }
+
+        // set click listeners for tab & close buttons
+        for (i = 0; i < this._tabitems.length; i++) {
+            this._tabClick(this._tabitems[i], 'on');
+        }
+
+        return container;
     },
 
     /**
-     * Add this sidebar to the specified map.
+     * Remove this sidebar from the map.
      *
      * @param {L.Map} map
      * @returns {Sidebar}
      */
-    addTo: function(map) {
+    onRemove: function (map) {
         var i;
 
+        this._map = null;
+        this._tabitems = [];
+        this._panes = [];
+        this._closeButtons = [];
+
+        // Remove click listeners for tab & close buttons
+        for (i = 0; i < this._tabitems.length - 1; i++)
+            this._tabClick(this._tabitems[i], 'off');
+
+        for (i = 0; i < this._closeButtons.length; i++)
+            this._closeClick(this._closeButtons[i], 'off');
+
+        return this;
+    },
+
+    /**
+     * @method addTo(map: Map): this
+     * Adds the control to the given map. Overrides the implementation of L.Control,
+     * changing the DOM mount target from map._controlContainer.topleft to map._container
+     */
+    addTo: function (map) {
+        this.onRemove();
         this._map = map;
 
-        // resetting click listeners for tab & close buttons
-        for (i = 0; i < this._tabitems.length; i++) {
-            this._tabClick(this._tabitems[i], 'off');
-            this._tabClick(this._tabitems[i], 'on');
-        }
-        for (i = 0; i < this._closeButtons.length; i++) {
-            this._closeClick(this._closeButtons[i], 'off');
-            this._closeClick(this._closeButtons[i], 'on');
-        }
+        this._sidebar = this.onAdd(map);
+
+        L.DomUtil.addClass(this._sidebar, 'leaflet-control');
+        L.DomUtil.addClass(this._sidebar, 'sidebar-' + this.getPosition());
+        if (L.Browser.touch)
+            L.DomUtil.addClass(this._sidebar, 'leaflet-touch');
+
+        // when adding to the map container, we should stop event propagation
+        L.DomEvent.disableScrollPropagation(this._sidebar);
+        L.DomEvent.disableClickPropagation(this._sidebar);
+
+        // insert as first child of map container (important for css)
+        map._container.insertBefore(this._sidebar, map._container.firstChild);
+
         return this;
     },
 
@@ -133,31 +178,10 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
      */
      removeFrom: function(map) {
          console.log('removeFrom() has been deprecated, please use remove() instead as support for this function will be ending soon.');
-         this.remove(map);
+         this.onRemove(map);
      },
 
-    /**
-     * Remove this sidebar from the map.
-     *
-     * @param {L.Map} map
-     * @returns {Sidebar}
-     */
-    remove: function (map) {
-        var i, child;
-
-        this._map = null;
-
-        // Remove click listeners for tab & close buttons
-        for (i = 0; i < this._tabitems.length - 1; i++)
-            this._tabClick(this._tabitems[i], 'off');
-
-        for (i = 0; this._closeButtons.length; i++)
-            this._closeClick(this._closeButtons[i], 'off');
-
-        return this;
-    },
-
-    /**
+   /**
      * Open sidebar (if it's closed) and show the specified tab.
      *
      * @param {string} id - The ID of the tab to show (without the # character)
@@ -243,13 +267,15 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
      *                                       on the top or the bottom of the sidebar. 'top' or 'bottom'
      * @param {HTMLString} {DOMnode} [data.tab]  content of the tab item, as HTMLstring or DOM node
      * @param {HTMLString} {DOMnode} [data.pane] content of the panel, as HTMLstring or DOM node
-     * @param {String} {Function} [data.button] URL to an (external) link that will be opened instead of a panel, or a click listener function
+     * @param {String} [data.link] URL to an (external) link that will be opened instead of a panel
+     * @param {String} [data.title] Title for the pane header
+     * @param {String} {Function} [data.button] URL to an (external) link or a click listener function that will be opened instead of a panel
      * @param {bool} [data.disabled] If the tab should be disabled by default
      *
      * @returns {L.Control.Sidebar}
      */
     addPanel: function(data) {
-        var i, pane, tab, tabHref, closeButtons;
+        var i, pane, tab, tabHref, closeButtons, content;
 
         // Create tab node
         tab = L.DomUtil.create('li', data.disabled ? 'disabled' : '');
@@ -260,6 +286,7 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
         tab._sidebar = this;
         tab._id = data.id;
         tab._button = data.button; // to allow links to be disabled, the href cannot be used
+        if (data.title && data.title[0] !== '<') tab.title = data.title;
 
         // append it to the DOM and store JS references
         if (data.position === 'bottom')
@@ -274,7 +301,14 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
             if (typeof data.pane === 'string') {
                 // pane is given as HTML string
                 pane = L.DomUtil.create('DIV', 'sidebar-pane', this._paneContainer);
-                pane.innerHTML = data.pane;
+                content = '';
+                if (data.title)
+                    content += '<h1 class="sidebar-header">' + data.title;
+                if (this.options.closeButton)
+                    content += '<span class="sidebar-close"><i class="fa fa-caret-left"></i></span>';
+                if (data.title)
+                    content += '</h1>';
+                pane.innerHTML = content + data.pane;
             } else {
                 // pane is given as DOM object
                 pane = data.pane;
@@ -284,11 +318,12 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
 
             this._panes.push(pane);
 
-            // Save references to close buttons & register click listeners
+            // Save references to close button & register click listener
             closeButtons = pane.querySelectorAll('.sidebar-close');
-            for (i = 0; i < closeButtons.length; i++) {
-                this._closeButtons.push(closeButtons[i]);
-                this._closeClick(closeButtons[i], 'on');
+            if (closeButtons.length) {
+                // select last button, because thats rendered on top
+                this._closeButtons.push(closeButtons[closeButtons.length - 1]);
+                this._closeClick(closeButtons[closeButtons.length - 1], 'on');
             }
         }
 
@@ -462,12 +497,13 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
  * @example
  * var sidebar = L.control.sidebar({ id: 'sidebar' }).addTo(map);
  *
- * @param {string} id - The id of the sidebar element (without the # character)
  * @param {Object} [options] - Optional options object
  * @param {string} [options.autopan=false] - whether to move the map when opening the sidebar to make maintain the visible center point
  * @param {string} [options.position=left] - Position of the sidebar: 'left' or 'right'
+ * @param {string} [options.id] - ID of a predefined sidebar container that should be used
+ * @param {boolean} [data.close=true] Whether to add a close button to the pane header
  * @returns {Sidebar} A new sidebar instance
  */
-L.control.sidebar = function(id, options) {
-    return new L.Control.Sidebar(id, options);
+L.control.sidebar = function(options, deprecated) {
+    return new L.Control.Sidebar(options, deprecated);
 };

@@ -30,7 +30,7 @@
 </head>
 <body>
 
-    <div id="map" class="sidebar-map"></div>
+    <div id="map"></div>
 
     <a href="https://github.com/nickpeihl/leaflet-sidebar-v2/"><img style="position: fixed; top: 0; right: 0; border: 0; z-index: 1000;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"></a>
 
@@ -48,7 +48,7 @@
 
         var marker = L.marker([51.2, 7]).addTo(map);
 
-        var sidebar = L.control.sidebar('sidebar').addTo(map);
+        var sidebar = L.control.sidebar().addTo(map);
 
         var userpanel = {
             id:   'user1',
@@ -65,8 +65,8 @@
             })
             .addPanel({
                 id:   'home',
-                tab:  '<i class="fa fa-home"></i>',
-                pane: '<h1 class="sidebar-header">Home<div class="sidebar-close"><i class="fa fa-caret-left"></i></div></h1>'
+                tab:  '<i class="fa fa-arrow-left"></i>',
+                link: './'
             })
             .disablePanel('home')
             .open('settings');
