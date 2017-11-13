@@ -1,6 +1,17 @@
 # Changelog
 This project adheres to semantic versioning.
 
+## v2.0.0 (2017-11-13)
+- added `title` option for `addPanel()`: autocreates a header with close button
+- added `closeButton` option for sidebar constructor: defaults to true
+
+### breaking changes
+- sidebar div is now moved into the map container, may break your layout ([#8](https://github.com/nickpeihl/leaflet-sidebar-v2/issues/8))
+- sidebar constructor only accepts option object, `id` param moved to `opts.id`
+
+## v1.1.1 (2017-11-13)
+- shrink package size
+
 ## v1.1.0 (2017-11-13)
 - add autopan feature
 - allow to add buttons with URLs or click handlers as tabs
