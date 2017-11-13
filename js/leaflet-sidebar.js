@@ -5,7 +5,10 @@
  * @extends L.Control
  * @param {string} id - The id of the sidebar element (without the # character)
  * @param {Object} [options] - Optional options object
+ * @param {string} [options.autopan=false] - whether to move the map when opening the sidebar to make maintain the visible center point
  * @param {string} [options.position=left] - Position of the sidebar: 'left' or 'right'
+ * @param {string} [options.id] - ID of a predefined sidebar container that should be used
+ * @param {boolean} [data.close=true] Whether to add a close button to the pane header
  * @see L.control.sidebar
  */
 L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
@@ -13,6 +16,7 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
 
     options: {
         autopan: false,
+        closeButton: true,
         id: '',
         position: 'left'
     },
@@ -25,6 +29,7 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
      * @param {string} [options.autopan=false] - whether to move the map when opening the sidebar to make maintain the visible center point
      * @param {string} [options.position=left] - Position of the sidebar: 'left' or 'right'
      * @param {string} [options.id] - ID of a predefined sidebar container that should be used
+     * @param {bool} [data.close=true] Whether to add a close button to the pane header
      */
     initialize: function(options, deprecatedOptions) {
         if (typeof options === 'string') {
@@ -100,20 +105,16 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
 
                 // Save references to close buttons
                 var closeButtons = child.querySelectorAll('.sidebar-close');
-                for (j = 0, len = closeButtons.length; j < len; j++) {
-                    this._closeButtons.push(closeButtons[j]);
+                if (closeButtons.length) {
+                    this._closeButtons.push(closeButtons[closeButtons.length - 1]);
+                    this._closeClick(closeButtons[closeButtons.length - 1], 'on');
                 }
             }
         }
 
-        // resetting click listeners for tab & close buttons
+        // set click listeners for tab & close buttons
         for (i = 0; i < this._tabitems.length; i++) {
-            this._tabClick(this._tabitems[i], 'off');
             this._tabClick(this._tabitems[i], 'on');
-        }
-        for (i = 0; i < this._closeButtons.length; i++) {
-            this._closeClick(this._closeButtons[i], 'off');
-            this._closeClick(this._closeButtons[i], 'on');
         }
 
         return container;
@@ -267,11 +268,12 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
      * @param {HTMLString} {DOMnode} [data.tab]  content of the tab item, as HTMLstring or DOM node
      * @param {HTMLString} {DOMnode} [data.pane] content of the panel, as HTMLstring or DOM node
      * @param {String} [data.link] URL to an (external) link that will be opened instead of a panel
+     * @param {String} [data.title] Title for the pane header
      *
      * @returns {L.Control.Sidebar}
      */
     addPanel: function(data) {
-        var i, pane, tab, tabHref, closeButtons;
+        var i, pane, tab, tabHref, closeButtons, content;
 
         // Create tab node
         tab     = L.DomUtil.create('li', '');
@@ -282,6 +284,7 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
         tab._sidebar = this;
         tab._id = data.id;
         tab._url = data.link; // to allow links to be disabled, the href cannot be used
+        if (data.title && data.title[0] !== '<') tab.title = data.title;
 
         // append it to the DOM and store JS references
         if (data.position === 'bottom')
@@ -296,7 +299,14 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
             if (typeof data.pane === 'string') {
                 // pane is given as HTML string
                 pane = L.DomUtil.create('DIV', 'sidebar-pane', this._paneContainer);
-                pane.innerHTML = data.pane;
+                content = '';
+                if (data.title)
+                    content += '<h1 class="sidebar-header">' + data.title;
+                if (this.options.closeButton)
+                    content += '<span class="sidebar-close"><i class="fa fa-caret-left"></i></span>';
+                if (data.title)
+                    content += '</h1>';
+                pane.innerHTML = content + data.pane;
             } else {
                 // pane is given as DOM object
                 pane = data.pane;
@@ -306,11 +316,12 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
 
             this._panes.push(pane);
 
-            // Save references to close buttons & register click listeners
+            // Save references to close button & register click listener
             closeButtons = pane.querySelectorAll('.sidebar-close');
-            for (i = 0; i < closeButtons.length; i++) {
-                this._closeButtons.push(closeButtons[i]);
-                this._closeClick(closeButtons[i], 'on');
+            if (closeButtons.length) {
+                // select last button, because thats rendered on top
+                this._closeButtons.push(closeButtons[closeButtons.length - 1]);
+                this._closeClick(closeButtons[closeButtons.length - 1], 'on');
             }
         }
 
@@ -486,6 +497,7 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
  * @param {string} [options.autopan=false] - whether to move the map when opening the sidebar to make maintain the visible center point
  * @param {string} [options.position=left] - Position of the sidebar: 'left' or 'right'
  * @param {string} [options.id] - ID of a predefined sidebar container that should be used
+ * @param {boolean} [data.close=true] Whether to add a close button to the pane header
  * @returns {Sidebar} A new sidebar instance
  */
 L.control.sidebar = function(options, deprecated) {

@@ -22,6 +22,7 @@ The parameters object is fully optional. The default values are shown:
 ```js
 var sidebar = L.control.sidebar({
     autopan: false,   // whether to maintain the centered map point when opening the sidebar
+    closeButton: true,// whether to add a close button to the panes
     id: 'sidebar',    // the DOM ID of a predefined sidebar container which should be used
     position: 'left', // left or right
 }).addTo(map);
@@ -35,7 +36,8 @@ var panelContent = {
     id: 'userinfo',                     // UID, used to access the panel
     tab: '<i class="fa fa-gear"></i>',  // content can be passed as HTML string,
     pane: someDomNode.innerHTML,        // DOM elements can be passed, too
-    position: 'bottom'                  // vertical alignment, 'top' or 'bottom'
+    title: 'Your Profile',              // an optional pane header
+    position: 'bottom'                  // optional vertical alignment, defaults to 'top'
 };
 sidebar.addPanel(panelContent);
 

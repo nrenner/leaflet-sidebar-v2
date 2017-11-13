@@ -51,12 +51,16 @@
 
         var marker = L.marker([51.2, 7]).addTo(map);
 
-        var sidebar = L.control.sidebar().addTo(map);
+        var sidebar = L.control.sidebar({
+            autopan: true,
+            closeButton: false,
+        }).addTo(map);
 
         var userpanel = {
             id:   'user1',
             tab:  '<i class="fa fa-user"></i>',
-            pane: '<h1 class="sidebar-header">User Data<div class="sidebar-close"><i class="fa fa-caret-left"></i></div></h1>',
+            // title: 'User Profile',
+            pane: 'user ipsum amen',
         };
 
         sidebar
@@ -68,12 +72,14 @@
             .addPanel({
                 id:   'mail',
                 tab:  '<i class="fa fa-envelope"></i>',
-                pane: '<h1 class="sidebar-header">Mails<div class="sidebar-close">',
+                title: 'Messages',
+                pane: '<p>Lorem ipsum dolor amet</p>',
             })
             .addPanel({
                 id:   'settings',
                 tab:  '<i class="fa fa-gear"></i>',
-                pane: '<h1 class="sidebar-header">Settings<div class="sidebar-close"><i class="fa fa-caret-left"></i></div></h1><br><button onclick="sidebar.enablePanel(\'mail\')">enable mails panel</button><button onclick="sidebar.disablePanel(\'mail\')">disable mails panel</button><br><button onclick="addUser()">add user</button>',
+                title: 'Settings',
+                pane: '<p><button onclick="sidebar.enablePanel(\'mail\')">enable mails panel</button><button onclick="sidebar.disablePanel(\'mail\')">disable mails panel</button></p><p><button onclick="addUser()">add user</button></b>',
                 position: 'bottom'
             })
             .disablePanel('mail')
