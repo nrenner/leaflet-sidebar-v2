@@ -36,11 +36,18 @@ var panelContent = {
 sidebar.addPanel(panelContent);
 
 /* add an external link */
-sidbar.addPanel({
+sidebar.addPanel({
     id: 'ghlink',
     tab: '<i class="fa fa-github"></i>',
-    link: 'https://github.com/nickpeihl/leaflet-sidebar-v2',
-})
+    button: 'https://github.com/nickpeihl/leaflet-sidebar-v2',
+});
+
+/* add an button with click listener */
+sidebar.addPanel({
+    id: 'click',
+    tab: '<i class="fa fa-info"></i>',
+    button: function (event) { console.log(event); }
+});
 
 /* remove a panel */
 sidebar.removePanel('userinfo');
