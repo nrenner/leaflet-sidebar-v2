@@ -1,0 +1,6 @@
+doc/
+examples/
+scss/
+bower.json
+gulpfile.js
+.travis.yml
