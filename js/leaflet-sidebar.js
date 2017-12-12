@@ -54,26 +54,26 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
     onAdd: function(map) {
         var i, j, child, tabContainers, newContainer, container;
 
-        // Find sidebar HTMLElement via .sidebar, create it if none was found
+        // Find sidebar HTMLElement via ID, create it if none was found
         container = L.DomUtil.get(this.options.id);
         if (container == null)
-            container = L.DomUtil.create('div', 'sidebar collapsed');
+            container = L.DomUtil.create('div', 'leaflet-sidebar collapsed');
 
         // Find paneContainer in DOM & store reference
-        this._paneContainer = container.querySelector('div.sidebar-content');
+        this._paneContainer = container.querySelector('div.leaflet-sidebar-content');
 
         // If none is found, create it
         if (this._paneContainer === null)
-            this._paneContainer = L.DomUtil.create('div', 'sidebar-content', container);
+            this._paneContainer = L.DomUtil.create('div', 'leaflet-sidebar-content', container);
 
         // Find tabContainerTop & tabContainerBottom in DOM & store reference
-        tabContainers = container.querySelectorAll('ul.sidebar-tabs, div.sidebar-tabs > ul');
+        tabContainers = container.querySelectorAll('ul.leaflet-sidebar-tabs, div.leaflet-sidebar-tabs > ul');
         this._tabContainerTop    = tabContainers[0] || null;
         this._tabContainerBottom = tabContainers[1] || null;
 
         // If no container was found, create it
         if (this._tabContainerTop === null) {
-            newContainer = L.DomUtil.create('div', 'sidebar-tabs', container);
+            newContainer = L.DomUtil.create('div', 'leaflet-sidebar-tabs', container);
             newContainer.setAttribute('role', 'tablist');
             this._tabContainerTop = L.DomUtil.create('ul', '', newContainer);
         }
@@ -100,11 +100,11 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
         for (i = 0; i < this._paneContainer.children.length; i++) {
             child = this._paneContainer.children[i];
             if (child.tagName === 'DIV' &&
-                L.DomUtil.hasClass(child, 'sidebar-pane')) {
+                L.DomUtil.hasClass(child, 'leaflet-sidebar-pane')) {
                 this._panes.push(child);
 
                 // Save references to close buttons
-                var closeButtons = child.querySelectorAll('.sidebar-close');
+                var closeButtons = child.querySelectorAll('.leaflet-sidebar-close');
                 if (closeButtons.length) {
                     this._closeButtons.push(closeButtons[closeButtons.length - 1]);
                     this._closeClick(closeButtons[closeButtons.length - 1], 'on');
@@ -156,7 +156,7 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
         this._sidebar = this.onAdd(map);
 
         L.DomUtil.addClass(this._sidebar, 'leaflet-control');
-        L.DomUtil.addClass(this._sidebar, 'sidebar-' + this.getPosition());
+        L.DomUtil.addClass(this._sidebar, 'leaflet-sidebar-' + this.getPosition());
         if (L.Browser.touch)
             L.DomUtil.addClass(this._sidebar, 'leaflet-touch');
 
@@ -300,12 +300,12 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
         if (data.pane) {
             if (typeof data.pane === 'string') {
                 // pane is given as HTML string
-                pane = L.DomUtil.create('DIV', 'sidebar-pane', this._paneContainer);
+                pane = L.DomUtil.create('DIV', 'leaflet-sidebar-pane', this._paneContainer);
                 content = '';
                 if (data.title)
-                    content += '<h1 class="sidebar-header">' + data.title;
+                    content += '<h1 class="leaflet-sidebar-header">' + data.title;
                 if (this.options.closeButton)
-                    content += '<span class="sidebar-close"><i class="fa fa-caret-left"></i></span>';
+                    content += '<span class="leaflet-sidebar-close"><i class="fa fa-caret-left"></i></span>';
                 if (data.title)
                     content += '</h1>';
                 pane.innerHTML = content + data.pane;
@@ -319,7 +319,7 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
             this._panes.push(pane);
 
             // Save references to close button & register click listener
-            closeButtons = pane.querySelectorAll('.sidebar-close');
+            closeButtons = pane.querySelectorAll('.leaflet-sidebar-close');
             if (closeButtons.length) {
                 // select last button, because thats rendered on top
                 this._closeButtons.push(closeButtons[closeButtons.length - 1]);
@@ -362,7 +362,7 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
         for (i = 0; i < this._panes.length; i++) {
             if (this._panes[i].id === id) {
                 pane = this._panes[i];
-                closeButtons = pane.querySelectorAll('.sidebar-close');
+                closeButtons = pane.querySelectorAll('.leaflet-sidebar-close');
                 // FIXME: broken for loop. close button logic?
                 for (j = 0; i < closeButtons.length; i++) {
                     this._closeClick(closeButtons[j], 'off');

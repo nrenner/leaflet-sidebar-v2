@@ -73,9 +73,9 @@ sidebar.close();
 If you use the sidebar with static content only, you can predefine content in HTML:
 
 ```html
-<div id="sidebar" class="sidebar collapsed">
+<div id="sidebar" class="leaflet-sidebar collapsed">
     <!-- Nav tabs -->
-    <div class="sidebar-tabs">
+    <div class="leaflet-sidebar-tabs">
         <ul role="tablist"> <!-- top aligned tabs -->
             <li><a href="#home" role="tab"><i class="fa fa-bars"></i></a></li>
             <li class="disabled"><a href="#messages" role="tab"><i class="fa fa-envelope"></i></a></li>
@@ -88,21 +88,21 @@ If you use the sidebar with static content only, you can predefine content in HT
     </div>
 
     <!-- Tab panes -->
-    <div class="sidebar-content">
-        <div class="sidebar-pane" id="home">
-            <h1 class="sidebar-header">
+    <div class="leaflet-sidebar-content">
+        <div class="leaflet-sidebar-pane" id="home">
+            <h1 class="leaflet-sidebar-header">
                 sidebar-v2
-                <div class="sidebar-close"><i class="fa fa-caret-left"></i></div>
+                <div class="leaflet-sidebar-close"><i class="fa fa-caret-left"></i></div>
             </h1>
             <p>A responsive sidebar for mapping libraries</p>
         </div>
 
-        <div class="sidebar-pane" id="messages">
-            <h1 class="sidebar-header">Messages<div class="sidebar-close"><i class="fa fa-caret-left"></i></div></h1>
+        <div class="leaflet-sidebar-pane" id="messages">
+            <h1 class="leaflet-sidebar-header">Messages<div class="leaflet-sidebar-close"><i class="fa fa-caret-left"></i></div></h1>
         </div>
 
-        <div class="sidebar-pane" id="profile">
-            <h1 class="sidebar-header">Profile<div class="sidebar-close"><i class="fa fa-caret-left"></i></div></h1>
+        <div class="leaflet-sidebar-pane" id="profile">
+            <h1 class="leaflet-sidebar-header">Profile<div class="leaflet-sidebar-close"><i class="fa fa-caret-left"></i></div></h1>
         </div>
     </div>
 </div>

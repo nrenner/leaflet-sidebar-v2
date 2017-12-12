@@ -12,7 +12,7 @@ $tab-active-bg: #0074d9 !default;
 
 @import 'base';
 
-.sidebar {
+.leaflet-sidebar {
     box-shadow: $sidebar-shadow;
 
     &.leaflet-touch {
@@ -30,7 +30,7 @@ $tab-active-bg: #0074d9 !default;
 }
 
 // move other controls aside from sidebar
-.sidebar-left {
+.leaflet-sidebar-left {
 
     & ~ .leaflet-control-container .leaflet-left {
         @media(min-width:$threshold-sm) {
@@ -57,7 +57,7 @@ $tab-active-bg: #0074d9 !default;
     }
 }
 
-.sidebar-right {
+.leaflet-sidebar-right {
 
     & ~ .leaflet-control-container .leaflet-right {
         @media(min-width:$threshold-sm) {

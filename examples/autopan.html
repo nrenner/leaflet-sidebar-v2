@@ -30,9 +30,9 @@
     </style>
 </head>
 <body>
-    <div id="sidebar" class="sidebar collapsed">
+    <div id="sidebar" class="leaflet-sidebar collapsed">
         <!-- Nav tabs -->
-        <div class="sidebar-tabs">
+        <div class="leaflet-sidebar-tabs">
             <ul role="tablist">
                 <li><a href="./" role="tab"><i class="fa fa-arrow-left"></i></a></li>
                 <li><a href="#autopan" role="tab"><i class="fa fa-map-marker"></i></a></li>
@@ -45,11 +45,11 @@
         </div>
 
         <!-- Tab panes -->
-        <div class="sidebar-content">
-            <div class="sidebar-pane" id="autopan">
-                <h1 class="sidebar-header">
+        <div class="leaflet-sidebar-content">
+            <div class="leaflet-sidebar-pane" id="autopan">
+                <h1 class="leaflet-sidebar-header">
                     sidebar-v2
-                    <span class="sidebar-close"><i class="fa fa-caret-left"></i></span>
+                    <span class="leaflet-sidebar-close"><i class="fa fa-caret-left"></i></span>
                 </h1>
 
                 <p>
@@ -62,8 +62,8 @@
                 </p>
             </div>
 
-            <div class="sidebar-pane" id="messages">
-                <h1 class="sidebar-header">Messages<span class="sidebar-close"><i class="fa fa-caret-left"></i></span></h1>
+            <div class="leaflet-sidebar-pane" id="messages">
+                <h1 class="leaflet-sidebar-header">Messages<span class="leaflet-sidebar-close"><i class="fa fa-caret-left"></i></span></h1>
             </div>
         </div>
     </div>
@@ -89,7 +89,7 @@
 
         var marker = L.marker([51.2, 7]).addTo(map);
 
-        var sidebar = L.control.sidebar('sidebar', { autopan: true })
+        var sidebar = L.control.sidebar({ id: 'sidebar', autopan: true })
             .addTo(map)
             .open('autopan');
 
