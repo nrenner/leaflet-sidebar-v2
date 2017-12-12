@@ -53,14 +53,15 @@
         var userpanel = {
             id:   'user1',
             tab:  '<i class="fa fa-user"></i>',
-            pane: '<h1 class="leaflet-sidebar-header">User Data<div class="leaflet-sidebar-close"><i class="fa fa-caret-left"></i></div></h1>',
+            title: 'User Data'
         };
 
         sidebar
             .addPanel({
                 id:   'settings',
                 tab:  '<i class="fa fa-gear"></i>',
-                pane: '<h1 class="leaflet-sidebar-header">Settings<div class="leaflet-sidebar-close"><i class="fa fa-caret-left"></i></div></h1><br><button onclick="sidebar.enablePanel(\'home\')">enable home</button><button onclick="sidebar.disablePanel(\'home\')">disable home</button><button onclick="addUser()">add user</button>',
+                title: 'Settings',
+                pane: '<br><button onclick="sidebar.enablePanel(\'home\')">enable home</button><button onclick="sidebar.disablePanel(\'home\')">disable home</button><button onclick="addUser()">add user</button>',
                 position: 'bottom'
             })
             .addPanel({

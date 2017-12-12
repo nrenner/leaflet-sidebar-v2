@@ -89,7 +89,7 @@
 
         var marker = L.marker([51.2, 7]).addTo(map);
 
-        var sidebar = L.control.sidebar({ id: 'sidebar', autopan: true })
+        var sidebar = L.control.sidebar({ container: 'sidebar', autopan: true })
             .addTo(map)
             .open('autopan');
 

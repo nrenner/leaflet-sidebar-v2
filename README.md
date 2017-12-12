@@ -18,10 +18,10 @@ The parameters object is fully optional. The default values are shown:
 
 ```js
 var sidebar = L.control.sidebar({
-    autopan: false,   // whether to maintain the centered map point when opening the sidebar
-    closeButton: true,// whether to add a close button to the panes
-    id: 'sidebar',    // the DOM ID of a predefined sidebar container which should be used
-    position: 'left', // left or right
+    autopan: false,       // whether to maintain the centered map point when opening the sidebar
+    closeButton: true,    // whether t add a close button to the panes
+    container: 'sidebar', // the DOM container or #ID of a predefined sidebar container that should be used
+    position: 'left',     // left or right
 }).addTo(map);
 ```
 

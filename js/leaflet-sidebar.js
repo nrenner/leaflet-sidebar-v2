@@ -17,7 +17,7 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
     options: {
         autopan: false,
         closeButton: true,
-        id: '',
+        container: '',
         position: 'left'
     },
 
@@ -28,13 +28,18 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
      * @param {Object} [options] - Optional options object
      * @param {string} [options.autopan=false] - whether to move the map when opening the sidebar to make maintain the visible center point
      * @param {string} [options.position=left] - Position of the sidebar: 'left' or 'right'
-     * @param {string} [options.id] - ID of a predefined sidebar container that should be used
+     * @param {string} [options.container] - ID of a predefined sidebar container that should be used
      * @param {bool} [data.close=true] Whether to add a close button to the pane header
      */
     initialize: function(options, deprecatedOptions) {
         if (typeof options === 'string') {
-            console.warn('this syntax is deprecated. please use L.control.sidebar({ id }) now');
-            options = { id: options };
+            console.warn('this syntax is deprecated. please use L.control.sidebar({ container }) now');
+            options = { container: options };
+        }
+
+        if (typeof options === 'object' && options.id) {
+            console.warn('this syntax is deprecated. please use L.control.sidebar({ container }) now');
+            options.container = options.id;
         }
 
         this._tabitems = [];
@@ -55,8 +60,10 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
         var i, j, child, tabContainers, newContainer, container;
 
         // Find sidebar HTMLElement via ID, create it if none was found
-        container = L.DomUtil.get(this.options.id);
-        if (container == null)
+        container = typeof this.options.container === 'string'
+          ? L.DomUtil.get(this.options.container)
+          : this.options.container;
+        if (!container)
             container = L.DomUtil.create('div', 'leaflet-sidebar collapsed');
 
         // Find paneContainer in DOM & store reference
@@ -495,12 +502,12 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
  * Create a new sidebar.
  *
  * @example
- * var sidebar = L.control.sidebar({ id: 'sidebar' }).addTo(map);
+ * var sidebar = L.control.sidebar({ container: 'sidebar' }).addTo(map);
  *
  * @param {Object} [options] - Optional options object
  * @param {string} [options.autopan=false] - whether to move the map when opening the sidebar to make maintain the visible center point
  * @param {string} [options.position=left] - Position of the sidebar: 'left' or 'right'
- * @param {string} [options.id] - ID of a predefined sidebar container that should be used
+ * @param {string} [options.container] - ID of a predefined sidebar container that should be used
  * @param {boolean} [data.close=true] Whether to add a close button to the pane header
  * @returns {Sidebar} A new sidebar instance
  */
