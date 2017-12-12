@@ -104,6 +104,9 @@
         var sidebar = L.control.sidebar({ container: 'sidebar' })
             .addTo(map)
             .open('home');
+
+        // sidebar.removeFrom(map);
+        map.remove(sidebar);
     </script>
 </body>
 </html>

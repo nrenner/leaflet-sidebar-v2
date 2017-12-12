@@ -142,7 +142,7 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
         this._closeButtons = [];
 
         // Remove click listeners for tab & close buttons
-        for (i = 0; i < this._tabitems.length - 1; i++)
+        for (i = 0; i < this._tabitems.length; i++)
             this._tabClick(this._tabitems[i], 'off');
 
         for (i = 0; i < this._closeButtons.length; i++)
@@ -160,19 +160,19 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
         this.onRemove();
         this._map = map;
 
-        this._sidebar = this.onAdd(map);
+        this._container = this.onAdd(map);
 
-        L.DomUtil.addClass(this._sidebar, 'leaflet-control');
-        L.DomUtil.addClass(this._sidebar, 'leaflet-sidebar-' + this.getPosition());
+        L.DomUtil.addClass(this._container, 'leaflet-control');
+        L.DomUtil.addClass(this._container, 'leaflet-sidebar-' + this.getPosition());
         if (L.Browser.touch)
-            L.DomUtil.addClass(this._sidebar, 'leaflet-touch');
+            L.DomUtil.addClass(this._container, 'leaflet-touch');
 
         // when adding to the map container, we should stop event propagation
-        L.DomEvent.disableScrollPropagation(this._sidebar);
-        L.DomEvent.disableClickPropagation(this._sidebar);
+        L.DomEvent.disableScrollPropagation(this._container);
+        L.DomEvent.disableClickPropagation(this._container);
 
         // insert as first child of map container (important for css)
-        map._container.insertBefore(this._sidebar, map._container.firstChild);
+        map._container.insertBefore(this._container, map._container.firstChild);
 
         return this;
     },
@@ -183,10 +183,13 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
      * @param {L.Map} map
      * @returns {Sidebar}
      */
-     removeFrom: function(map) {
-         console.log('removeFrom() has been deprecated, please use remove() instead as support for this function will be ending soon.');
-         this.onRemove(map);
-     },
+    removeFrom: function(map) {
+        console.warn('removeFrom() has been deprecated, please use remove() instead as support for this function will be ending soon.');
+        this._map._container.removeChild(this._container);
+        this.onRemove(map);
+
+        return this;
+    },
 
    /**
      * Open sidebar (if it's closed) and show the specified tab.
@@ -223,9 +226,9 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
         this.fire('content', { id: id });
 
         // Open sidebar if it's closed
-        if (L.DomUtil.hasClass(this._sidebar, 'collapsed')) {
+        if (L.DomUtil.hasClass(this._container, 'collapsed')) {
             this.fire('opening');
-            L.DomUtil.removeClass(this._sidebar, 'collapsed');
+            L.DomUtil.removeClass(this._container, 'collapsed');
             if (this.options.autopan) this._panMap('open');
         }
 
@@ -248,9 +251,9 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
         }
 
         // close sidebar, if it's opened
-        if (!L.DomUtil.hasClass(this._sidebar, 'collapsed')) {
+        if (!L.DomUtil.hasClass(this._container, 'collapsed')) {
             this.fire('closing');
-            L.DomUtil.addClass(this._sidebar, 'collapsed');
+            L.DomUtil.addClass(this._container, 'collapsed');
             if (this.options.autopan) this._panMap('close');
         }
 
@@ -370,8 +373,7 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
             if (this._panes[i].id === id) {
                 pane = this._panes[i];
                 closeButtons = pane.querySelectorAll('.leaflet-sidebar-close');
-                // FIXME: broken for loop. close button logic?
-                for (j = 0; i < closeButtons.length; i++) {
+                for (j = 0; i < closeButtons.length; j++) {
                     this._closeClick(closeButtons[j], 'off');
                 }
 
@@ -447,6 +449,10 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
         }
     },
 
+    onCloseClick: function() {
+        this.close();
+    },
+
     /**
      * (un)registers the onclick event for the given close button
      * depending on the second argument
@@ -456,15 +462,10 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
      * @param {String} [on] 'on' or 'off'
      */
     _closeClick: function(closeButton, on) {
-
-        var onCloseClick = function() {
-            this.close();
-        };
-
         if (on === 'on') {
-            L.DomEvent.on(closeButton, 'click', onCloseClick, this);
+            L.DomEvent.on(closeButton, 'click', this.onCloseClick, this);
         } else {
-            L.DomEvent.off(closeButton, 'click', onCloseClick, this);
+            L.DomEvent.off(closeButton, 'click', this.onCloseClick);
         }
     },
 
@@ -489,7 +490,7 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
      * @param {String} [openClose] The behaviour to enact ('open' | 'close')
      */
    _panMap: function(openClose) {
-        var panWidth = Number.parseInt(L.DomUtil.getStyle(this._sidebar, 'max-width')) / 2;
+        var panWidth = Number.parseInt(L.DomUtil.getStyle(this._container, 'max-width')) / 2;
         if (
             openClose === 'open' && this.options.position === 'left' ||
             openClose === 'close' && this.options.position === 'right'
