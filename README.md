@@ -1,12 +1,16 @@
 # leaflet-sidebar-v2
 
-A responsive sidebar _just_ for [Leaflet](http://leafletjs.com/). A fork of [sidebar-v2](http://turbo87.github.io/sidebar-v2) that only contains the necessary ingredients for use in Leaflet.
+A responsive sidebar _just_ for [Leaflet](http://leafletjs.com/). A fork of [sidebar-v2](http://turbo87.github.io/sidebar-v2) that only contains the necessary ingredients for use in Leaflet and provides enhanced functionality.
 
 ![Demo](doc/leaflet-sidebar-v2.gif)
 
 ## Why the Fork?
-I wanted to `npm install` sidebar-v2 for a Leaflet project which required the `main` and `style` fields in [`package.json`](package.json). This fork removes the Google Maps and OpenLayers files since I don't need them in the npm package.
-Also functionality is extended: Featuring a JS API for panel modification and an "autopan" feature.
+- only supports leaflet (0.x and 1.x) to maintain a smaller codebase and support more features
+- compatibility with bootstrap (no generic `.sidebar` class)
+- provides a npm package `leaflet-sidebar-v2` with `main` and `style` fields in [`package.json`](package.json)
+- new features based on leaflet.js
+    - JS API for panel modification
+    - "autopan" feature, moving the map content next to the sidebar content
 
 ## Usage
 
@@ -67,6 +71,14 @@ sidebar.open('userinfo');
 
 /* close the sidebar */
 sidebar.close();
+```
+
+#### remove sidebar
+
+```js
+/* remove the sidebar (and destroy the sidebar container!) */
+sidebar.remove();
+sidebar.removeFrom(map); // leaflet 0.x
 ```
 
 ### markup

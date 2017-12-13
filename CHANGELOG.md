@@ -1,6 +1,14 @@
 # Changelog
 This project adheres to semantic versioning.
 
+## v3.0.0 (2017-12-13)
+- rename sidebar `options.id` to `options.container`, accepting a DOM Node or ID
+- fix sidebar `remove()`
+
+### breaking changes
+- prefixed all CSS classes with `leaflet-` to avoid conflicts with bootstrap (#13)
+- `remove()` now destroys the sidebar container for consistency with other leaflet controls
+
 ## v2.0.0 (2017-11-13)
 - added `title` option for `addPanel()`: autocreates a header with close button
 - added `closeButton` option for sidebar constructor: defaults to true
