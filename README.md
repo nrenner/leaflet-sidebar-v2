@@ -11,6 +11,14 @@ A responsive sidebar _just_ for [Leaflet](http://leafletjs.com/). A fork of [sid
 - new features based on leaflet.js
     - JS API for panel modification
     - "autopan" feature, moving the map content next to the sidebar content
+    
+## Examples
+ - [Simple example](http://www.npeihl.com/leaflet-sidebar-v2/examples/index.html)
+ - [Autopanning of Map](http://www.npeihl.com/leaflet-sidebar-v2/examples/autopan.html)
+ - [Right aligned](http://www.npeihl.com/leaflet-sidebar-v2/examples/position-right.html)
+ - [Dynamic panel content](http://www.npeihl.com/leaflet-sidebar-v2/examples/leaflet-api.html)
+ - [Leaflet v0.7 example](http://www.npeihl.com/leaflet-sidebar-v2/examples/leaflet-0.7.html)
+ - [Adapt Sidebar to Map container size](http://www.npeihl.com/leaflet-sidebar-v2/examples/halfheight.html)
 
 ## Usage
 
