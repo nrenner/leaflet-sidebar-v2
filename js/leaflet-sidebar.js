@@ -423,7 +423,7 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
      */
     _tabClick: function(tab, on) {
         var link = tab.querySelector('a');
-        if (link.hasAttribute('href') && link.getAttribute('href')[0] !== '#')
+        if (!link.hasAttribute('href') || link.getAttribute('href')[0] !== '#')
             return;
 
         var onTabClick = function(e) {
