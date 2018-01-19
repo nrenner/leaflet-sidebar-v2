@@ -1,6 +1,9 @@
 # Changelog
 This project adheres to semantic versioning.
 
+## v3.0.2 (2018-01-20)
+- support click listeners in html-markup-only variant (#17)
+
 ## v3.0.1 (2018-01-19)
 - add typescript type definitions (#12)
 
