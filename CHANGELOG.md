@@ -1,6 +1,9 @@
 # Changelog
 This project adheres to semantic versioning.
 
+## v3.0.1 (2018-01-19)
+- add typescript type definitions (#12)
+
 ## v3.0.0 (2017-12-13)
 - rename sidebar `options.id` to `options.container`, accepting a DOM Node or ID
 - fix sidebar `remove()`
