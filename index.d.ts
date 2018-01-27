@@ -17,7 +17,7 @@ declare module 'leaflet' {
             id: string,
             tab: HTMLElement | string,
             panel?: HTMLElement | string,
-            button?: EventListener,
+            button?: EventListener | string,
             disabled?: boolean,
             position?: 'top' | 'bottom',
             title?: string,
