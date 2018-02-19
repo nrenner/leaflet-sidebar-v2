@@ -8,7 +8,7 @@ $width-sm: 305px !default;
 $width-xs: 100% !default;
 
 $sidebar-z-index: 2000 !default;
-$sidebar-transition: 500ms !default;
+$sidebar-transition: 250ms !default;
 
 $tab-size: 40px !default;
 $tab-font-size: 12pt !default;
@@ -33,13 +33,20 @@ $content-padding-horizontal: 20px !default;
 
     z-index: $sidebar-z-index;
 
+background-color: $content-bg;
+
     &.collapsed {
+        width: 0;
+        /*
         width: $tab-size;
+        */
     }
 
     @media(min-width:$threshold-sm) {
+        /*
         top: $sidebar-margins;
         bottom: $sidebar-margins;
+        */
 
         transition: width $sidebar-transition;
     }
@@ -62,24 +69,34 @@ $content-padding-horizontal: 20px !default;
 
 .leaflet-sidebar-left {
     left: 0;
-
+/*
     @media(min-width:$threshold-sm) {
         left: $sidebar-margins;
     }
+*/
 }
 
 .leaflet-sidebar-right {
     right: 0;
-
+/*
     @media(min-width:$threshold-sm) {
         right: $sidebar-margins;
     }
+*/
 }
 
 .leaflet-sidebar-tabs {
+    position: absolute;
+    /*
+    top: 10px;
+    bottom: 10px;
+
+    height: 100%;
+    */
     top: 0;
     bottom: 0;
-    height: 100%;
+    height: auto;
+    z-index: 2001;
 
     .leaflet-sidebar-left & {
         left: 0;
@@ -90,6 +107,16 @@ $content-padding-horizontal: 20px !default;
     }
 
     background-color: $tabs-bg;
+    transition: background-color $sidebar-transition;
+
+    &.collapsed {
+        background-color: transparent;
+    }
+    /*
+    transition: background-color $tab-transition;
+    transition: background-color $tab-transition $sidebar-transition;
+    */
+
 
     &, & > ul {
         position: absolute;
@@ -113,6 +140,8 @@ $content-padding-horizontal: 20px !default;
             overflow: hidden;
 
             transition: all $tab-transition;
+
+            background-color: $tabs-bg;
 
             &:hover {
                 color: $tab-hover-fg;
@@ -177,8 +206,8 @@ $content-padding-horizontal: 20px !default;
     top: 0;
     bottom: 0;
 
-    background-color: $content-bg;
-
+/*     background-color: $content-bg;
+ */
     overflow-x: hidden;
     overflow-y: auto;
 

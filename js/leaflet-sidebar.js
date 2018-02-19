@@ -57,12 +57,10 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
      * @returns {Sidebar}
      */
     onAdd: function(map) {
-        var i, j, child, tabContainers, newContainer, container;
+        var i, j, child, tabContainers, newContainer, container, tabContainer;
 
         // Find sidebar HTMLElement via ID, create it if none was found
-        container = typeof this.options.container === 'string'
-          ? L.DomUtil.get(this.options.container)
-          : this.options.container;
+        container = typeof this.options.container === 'string' ? L.DomUtil.get(this.options.container) : this.options.container;
         if (!container)
             container = L.DomUtil.create('div', 'leaflet-sidebar collapsed');
 
@@ -74,7 +72,8 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
             this._paneContainer = L.DomUtil.create('div', 'leaflet-sidebar-content', container);
 
         // Find tabContainerTop & tabContainerBottom in DOM & store reference
-        tabContainers = container.querySelectorAll('ul.leaflet-sidebar-tabs, div.leaflet-sidebar-tabs > ul');
+        this._tabContainer = this.options.tabContainer ? L.DomUtil.get(this.options.tabContainer) : container;
+        tabContainers = this._tabContainer.querySelectorAll('ul.leaflet-sidebar-tabs, div.leaflet-sidebar-tabs > ul');
         this._tabContainerTop    = tabContainers[0] || null;
         this._tabContainerBottom = tabContainers[1] || null;
 
@@ -162,10 +161,14 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
 
         this._container = this.onAdd(map);
 
+// TODO
         L.DomUtil.addClass(this._container, 'leaflet-control');
         L.DomUtil.addClass(this._container, 'leaflet-sidebar-' + this.getPosition());
+        L.DomUtil.addClass(this._tabContainer, 'leaflet-sidebar-' + this.getPosition());
+/*
         if (L.Browser.touch)
             L.DomUtil.addClass(this._container, 'leaflet-touch');
+*/
 
         // when adding to the map container, we should stop event propagation
         L.DomEvent.disableScrollPropagation(this._container);
@@ -224,11 +227,11 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
         }
 
         this.fire('content', { id: id });
-
         // Open sidebar if it's closed
         if (L.DomUtil.hasClass(this._container, 'collapsed')) {
             this.fire('opening');
             L.DomUtil.removeClass(this._container, 'collapsed');
+            L.DomUtil.removeClass(this._tabContainer, 'collapsed');
             if (this.options.autopan) this._panMap('open');
         }
 
@@ -254,6 +257,7 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
         if (!L.DomUtil.hasClass(this._container, 'collapsed')) {
             this.fire('closing');
             L.DomUtil.addClass(this._container, 'collapsed');
+            L.DomUtil.addClass(this._tabContainer, 'collapsed');
             if (this.options.autopan) this._panMap('close');
         }
 
