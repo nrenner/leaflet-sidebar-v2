@@ -162,7 +162,7 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
         this._container = this.onAdd(map);
 
 // TODO
-        L.DomUtil.addClass(this._container, 'leaflet-control');
+//        L.DomUtil.addClass(this._container, 'leaflet-control');
         L.DomUtil.addClass(this._container, 'leaflet-sidebar-' + this.getPosition());
         L.DomUtil.addClass(this._tabContainer, 'leaflet-sidebar-' + this.getPosition());
 /*
@@ -175,7 +175,21 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
         L.DomEvent.disableClickPropagation(this._container);
 
         // insert as first child of map container (important for css)
-        map._container.insertBefore(this._container, map._container.firstChild);
+//        map._container.insertBefore(this._container, map._container.firstChild);
+        
+        if (!L.DomUtil.hasClass(this._map.getContainer(), 'leaflet-sidebar-map')) {
+            L.DomUtil.addClass(this._map.getContainer(), 'leaflet-sidebar-map');
+            this._map.invalidateSize();
+        }
+
+        //if (this.options.autopan) this._container.addEventListener("transitionend", this._map._onResize, true);
+        if (this.options.autopan) this._container.addEventListener("transitionend", L.bind(function (e) {
+//console.log('transitionend: ', e);
+            this._map.invalidateSize({
+                animate: false,
+                //pan: false
+            });
+        }, this), true);
 
         return this;
     },
@@ -232,7 +246,7 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
             this.fire('opening');
             L.DomUtil.removeClass(this._container, 'collapsed');
             L.DomUtil.removeClass(this._tabContainer, 'collapsed');
-            if (this.options.autopan) this._panMap('open');
+            //if (this.options.autopan) this._panMap('open');
         }
 
         return this;
@@ -258,7 +272,7 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
             this.fire('closing');
             L.DomUtil.addClass(this._container, 'collapsed');
             L.DomUtil.addClass(this._tabContainer, 'collapsed');
-            if (this.options.autopan) this._panMap('close');
+            //if (this.options.autopan) this._panMap('close');
         }
 
         return this;
@@ -499,7 +513,7 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
             openClose === 'open' && this.options.position === 'left' ||
             openClose === 'close' && this.options.position === 'right'
         ) panWidth *= -1;
-        this._map.panBy([panWidth, 0], { duration: 0.5 });
+        this._map.panBy([panWidth, 0], { duration: 0.25 });
    }
 });
 

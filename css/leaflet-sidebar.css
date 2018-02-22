@@ -1,52 +1,77 @@
+.leaflet-sidebar-flex-row {
+  display: flex;
+  flex-direction: row;
+  height: 100%; }
+
 .leaflet-sidebar {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 100%;
+  /*
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: $width-xs;
+    */
+  flex: 1 1 100%;
   overflow: hidden;
-  z-index: 2000;
-  background-color: rgba(255, 255, 255, 0.95); }
+  /*
+    z-index: $sidebar-z-index;
+    */
+  background-color: rgba(255, 255, 255, 0.95);
+  /*
+    @media(min-width:$threshold-sm) and (max-width:$threshold-md - 1px) {
+        width: $width-sm;
+        max-width: $width-sm;
+    }
+
+    @media(min-width:$threshold-md) and (max-width:$threshold-lg - 1px) {
+        width: $width-md;
+        max-width: $width-md;
+    }
+
+    @media(min-width:$threshold-lg) {
+        width: $width-lg;
+        max-width: $width-lg;
+    }
+*/ }
   .leaflet-sidebar.collapsed {
-    width: 0;
+    flex: 0 1 0;
     /*
+        width: 0;
         width: $tab-size;
-        */ }
+    */ }
   @media (min-width: 768px) {
     .leaflet-sidebar {
       /*
         top: $sidebar-margins;
         bottom: $sidebar-margins;
         */
-      transition: width 250ms; } }
-  @media (min-width: 768px) and (max-width: 991px) {
-    .leaflet-sidebar {
-      width: 305px;
-      max-width: 305px; } }
-  @media (min-width: 992px) and (max-width: 1199px) {
-    .leaflet-sidebar {
-      width: 390px;
-      max-width: 390px; } }
-  @media (min-width: 1200px) {
-    .leaflet-sidebar {
-      width: 460px;
-      max-width: 460px; } }
+      /* TODO why 100px? */
+      flex: 1 1 100px;
+      /* To make the transition work nicely.  (Transitions to/from
+           "width:auto" are buggy in Gecko and Webkit, at least.
+           See http://bugzil.la/731886 for more info.) */
+      /*
+        width: 30px;
 
+        transition: width $sidebar-transition;
+        */
+      transition: flex 250ms; } }
+
+/*
 .leaflet-sidebar-left {
-  left: 0;
-  /*
+    left: 0;
     @media(min-width:$threshold-sm) {
         left: $sidebar-margins;
     }
-*/ }
-
+}
+*/
+/*
 .leaflet-sidebar-right {
-  right: 0;
-  /*
+    right: 0;
     @media(min-width:$threshold-sm) {
         right: $sidebar-margins;
     }
-*/ }
-
+}
+*/
 .leaflet-sidebar-tabs {
   position: absolute;
   /*
@@ -59,15 +84,17 @@
   bottom: 0;
   height: auto;
   z-index: 2001;
+  /*     .leaflet-sidebar-right & {
+ */
   background-color: #fff;
   transition: background-color 250ms;
   /*
     transition: background-color $tab-transition;
     transition: background-color $tab-transition $sidebar-transition;
     */ }
-  .leaflet-sidebar-left .leaflet-sidebar-tabs {
+  .leaflet-sidebar-tabs.leaflet-sidebar-left {
     left: 0; }
-  .leaflet-sidebar-right .leaflet-sidebar-tabs {
+  .leaflet-sidebar-tabs.leaflet-sidebar-right {
     right: 0; }
   .leaflet-sidebar-tabs.collapsed {
     background-color: transparent; }
@@ -110,19 +137,29 @@
     bottom: 0; }
 
 .leaflet-sidebar-content {
-  position: absolute;
-  top: 0;
-  bottom: 0;
+  /*
+    position: absolute;
+
+    .leaflet-sidebar-left & {
+        left: $tab-size;
+        right: 0;
+    }
+
+    .leaflet-sidebar-right & {
+        left: 0;
+        right: $tab-size;
+    }
+
+    top: 0;
+    bottom: 0;
+    */
+  height: 100%;
   /*     background-color: $content-bg;
  */
   overflow-x: hidden;
   overflow-y: auto; }
-  .leaflet-sidebar-left .leaflet-sidebar-content {
-    left: 40px;
-    right: 0; }
   .leaflet-sidebar-right .leaflet-sidebar-content {
-    left: 0;
-    right: 40px; }
+    margin-right: 40px; }
   .leaflet-sidebar.collapsed > .leaflet-sidebar-content {
     overflow-y: hidden; }
 
@@ -134,18 +171,24 @@
   left: 0;
   right: 0;
   box-sizing: border-box;
-  padding: 10px 20px; }
+  padding: 10px 20px;
+  /*
+    @media(min-width:$threshold-sm) and (max-width:$threshold-md - 1px) {
+        min-width: $width-sm - $tab-size;
+    }
+
+    @media(min-width:$threshold-md) and (max-width:$threshold-lg - 1px) {
+        min-width: $width-md - $tab-size;
+    }
+
+    @media(min-width:$threshold-lg) {
+        min-width: $width-lg - $tab-size;
+    }
+*/ }
   .leaflet-sidebar-pane.active {
-    display: block; }
-  @media (min-width: 768px) and (max-width: 991px) {
-    .leaflet-sidebar-pane {
-      min-width: 265px; } }
-  @media (min-width: 992px) and (max-width: 1199px) {
-    .leaflet-sidebar-pane {
-      min-width: 350px; } }
-  @media (min-width: 1200px) {
-    .leaflet-sidebar-pane {
-      min-width: 420px; } }
+    /*         display: block;
+ */
+    display: inherit; }
 
 .leaflet-sidebar-header {
   margin: -10px -20px 0;
@@ -170,6 +213,9 @@
   .leaflet-sidebar-right .leaflet-sidebar-close {
     left: 0; }
 
+.leaflet-sidebar-map {
+  flex: 2.5 1 auto; }
+
 /*
 .leaflet-sidebar {
     box-shadow: $sidebar-shadow;
@@ -188,42 +234,58 @@
     }
 }
 */
-@media (min-width: 768px) {
-  .leaflet-sidebar-left ~ .leaflet-control-container .leaflet-left {
-    transition: left 250ms; } }
+/*
+.leaflet-sidebar-left {
 
-@media (min-width: 768px) and (max-width: 991px) {
-  .leaflet-sidebar-left ~ .leaflet-control-container .leaflet-left {
-    left: 315px; } }
+    & ~ .leaflet-control-container .leaflet-left {
+        @media(min-width:$threshold-sm) {
+            transition: left $sidebar-transition;
+        }
 
-@media (min-width: 992px) and (max-width: 1199px) {
-  .leaflet-sidebar-left ~ .leaflet-control-container .leaflet-left {
-    left: 400px; } }
+        @media(min-width:$threshold-sm) and (max-width:$threshold-md - 1px) {
+            left: $width-sm + $sidebar-margins;
+        }
 
-@media (min-width: 1200px) {
-  .leaflet-sidebar-left ~ .leaflet-control-container .leaflet-left {
-    left: 470px; } }
+        @media(min-width:$threshold-md) and (max-width:$threshold-lg - 1px) {
+            left: $width-md + $sidebar-margins;
+        }
 
-@media (min-width: 768px) {
-  .leaflet-sidebar-left.collapsed ~ .leaflet-control-container .leaflet-left {
-    left: 50px; } }
+        @media(min-width:$threshold-lg) {
+            left: $width-lg + $sidebar-margins;
+        }
+    }
 
-@media (min-width: 768px) {
-  .leaflet-sidebar-right ~ .leaflet-control-container .leaflet-right {
-    transition: right 250ms; } }
+    &.collapsed ~ .leaflet-control-container .leaflet-left {
+        @media(min-width:$threshold-sm) {
+            left: $tab-size + $sidebar-margins;
+        }
+    }
+}
 
-@media (min-width: 768px) and (max-width: 991px) {
-  .leaflet-sidebar-right ~ .leaflet-control-container .leaflet-right {
-    right: 315px; } }
+.leaflet-sidebar-right {
 
-@media (min-width: 992px) and (max-width: 1199px) {
-  .leaflet-sidebar-right ~ .leaflet-control-container .leaflet-right {
-    right: 400px; } }
+    & ~ .leaflet-control-container .leaflet-right {
+        @media(min-width:$threshold-sm) {
+            transition: right $sidebar-transition;
+        }
 
-@media (min-width: 1200px) {
-  .leaflet-sidebar-right ~ .leaflet-control-container .leaflet-right {
-    right: 470px; } }
+        @media(min-width:$threshold-sm) and (max-width:$threshold-md - 1px) {
+            right: $width-sm + $sidebar-margins;
+        }
 
-@media (min-width: 768px) {
-  .leaflet-sidebar-right.collapsed ~ .leaflet-control-container .leaflet-right {
-    right: 50px; } }
+        @media(min-width:$threshold-md) and (max-width:$threshold-lg - 1px) {
+            right: $width-md + $sidebar-margins;
+        }
+
+        @media(min-width:$threshold-lg) {
+            right: $width-lg + $sidebar-margins;
+        }
+    }
+
+    &.collapsed ~ .leaflet-control-container .leaflet-right {
+        @media(min-width:$threshold-sm) {
+            right: $tab-size + $sidebar-margins;
+        }
+    }
+}
+*/
