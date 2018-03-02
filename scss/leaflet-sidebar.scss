@@ -61,7 +61,7 @@ $tab-active-bg: #0074d9 !default;
             & > ul {
                 box-shadow: none;
                 border: $sidebar-touch-border;
-                border-right: 0px;
+                border-right: 0;
                 background-clip: padding-box;
                 margin-top: 0;
             }

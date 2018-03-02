@@ -161,8 +161,6 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
 
         this._container = this.onAdd(map);
 
-// TODO
-//        L.DomUtil.addClass(this._container, 'leaflet-control');
         L.DomUtil.addClass(this._container, 'leaflet-sidebar-' + this.getPosition());
         L.DomUtil.addClass(this._tabContainer, 'leaflet-sidebar-' + this.getPosition());
 
@@ -176,9 +174,6 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
         L.DomEvent.disableScrollPropagation(this._container);
         L.DomEvent.disableClickPropagation(this._container);
 
-        // insert as first child of map container (important for css)
-//        map._container.insertBefore(this._container, map._container.firstChild);
-        
         if (!L.DomUtil.hasClass(this._map.getContainer(), 'leaflet-sidebar-map')) {
             L.DomUtil.addClass(this._map.getContainer(), 'leaflet-sidebar-map');
             this._map.invalidateSize();

@@ -7,7 +7,7 @@ $width-md: 390px !default;
 $width-sm: 305px !default;
 $width-xs: 100% !default;
 
-$sidebar-z-index: 2000 !default;
+$sidebar-z-index: 1000 !default;
 $sidebar-transition: 250ms !default;
 
 $tab-size: 36px !default;
@@ -28,106 +28,34 @@ $content-padding-horizontal: 10px !default;
 
 .leaflet-sidebar {
 
-    /*
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    width: $width-xs;
-    */
-
     flex: 1 1 100%;
 
     overflow: hidden;
-
-    /*
-    z-index: $sidebar-z-index;
-    */
-
     background-color: $content-bg;
 
     &.collapsed {
         flex: 0 1 0;
-    /*
-        width: 0;
-        width: $tab-size;
-    */
     }
 
     @media(min-width:$threshold-sm) {
-        /*
-        top: $sidebar-margins;
-        bottom: $sidebar-margins;
-        */
-
-/* TODO why 100px? */
         flex: 1 1 100px;
 
-        /* To make the transition work nicely.  (Transitions to/from
-           "width:auto" are buggy in Gecko and Webkit, at least.
-           See http://bugzil.la/731886 for more info.) */
-        /*
-        width: 30px;
-
-        transition: width $sidebar-transition;
-        */
         transition: flex $sidebar-transition;
     }
-/*
-    @media(min-width:$threshold-sm) and (max-width:$threshold-md - 1px) {
-        width: $width-sm;
-        max-width: $width-sm;
-    }
-
-    @media(min-width:$threshold-md) and (max-width:$threshold-lg - 1px) {
-        width: $width-md;
-        max-width: $width-md;
-    }
-
-    @media(min-width:$threshold-lg) {
-        width: $width-lg;
-        max-width: $width-lg;
-    }
-*/
-
 }
-
-/*
-.leaflet-sidebar-left {
-    left: 0;
-    @media(min-width:$threshold-sm) {
-        left: $sidebar-margins;
-    }
-}
-*/
-
-/*
-.leaflet-sidebar-right {
-    right: 0;
-    @media(min-width:$threshold-sm) {
-        right: $sidebar-margins;
-    }
-}
-*/
 
 .leaflet-sidebar-tabs {
     position: absolute;
-    /*
-    top: 10px;
-    bottom: 10px;
-
-    height: 100%;
-    */
     top: $sidebar-margins;
     bottom: $sidebar-margins;
     height: auto;
-    z-index: 2001;
+    z-index: $sidebar-z-index;
+    pointer-events: none;
 
     &.leaflet-sidebar-left {
         left: 0;
     }
 
-/*     .leaflet-sidebar-right & {
- */
     &.leaflet-sidebar-right {
         right: 0;
     }
@@ -153,6 +81,7 @@ $content-padding-horizontal: 10px !default;
         & > li {
             width: 100%;
             height: $tab-size;
+            pointer-events: auto;
 
             color: $tab-fg;
             @if $tab-bg { background: $tab-bg; }
@@ -211,31 +140,12 @@ $content-padding-horizontal: 10px !default;
 }
 
 .leaflet-sidebar-content {
-    /*
-    position: absolute;
-
-    .leaflet-sidebar-left & {
-        left: $tab-size;
-        right: 0;
-    }
-
-    .leaflet-sidebar-right & {
-        left: 0;
-        right: $tab-size;
-    }
-
-    top: 0;
-    bottom: 0;
-    */
     height: 100%;
 
     .leaflet-sidebar-right & {
         margin-right: $tab-size;
     }
 
-
-/*     background-color: $content-bg;
- */
     overflow-x: hidden;
     overflow-y: auto;
 
@@ -244,8 +154,9 @@ $content-padding-horizontal: 10px !default;
     }
 }
 
- .collapsed > .leaflet-sidebar-content {
-    overflow-y:hidden; }
+.collapsed > .leaflet-sidebar-content {
+    overflow-y:hidden; 
+}
 
 
 .leaflet-sidebar-pane {
@@ -257,23 +168,8 @@ $content-padding-horizontal: 10px !default;
     padding: $content-padding-vertical $content-padding-horizontal;
 
     &.active {
-/*         display: block;
- */
         display: inherit;
     }
-/*
-    @media(min-width:$threshold-sm) and (max-width:$threshold-md - 1px) {
-        min-width: $width-sm - $tab-size;
-    }
-
-    @media(min-width:$threshold-md) and (max-width:$threshold-lg - 1px) {
-        min-width: $width-md - $tab-size;
-    }
-
-    @media(min-width:$threshold-lg) {
-        min-width: $width-lg - $tab-size;
-    }
-*/
 }
 
 .leaflet-sidebar-header {

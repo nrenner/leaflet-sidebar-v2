@@ -4,88 +4,23 @@
   height: 100%; }
 
 .leaflet-sidebar {
-  /*
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    width: $width-xs;
-    */
   flex: 1 1 100%;
   overflow: hidden;
-  /*
-    z-index: $sidebar-z-index;
-    */
-  background-color: rgba(255, 255, 255, 0.95);
-  /*
-    @media(min-width:$threshold-sm) and (max-width:$threshold-md - 1px) {
-        width: $width-sm;
-        max-width: $width-sm;
-    }
-
-    @media(min-width:$threshold-md) and (max-width:$threshold-lg - 1px) {
-        width: $width-md;
-        max-width: $width-md;
-    }
-
-    @media(min-width:$threshold-lg) {
-        width: $width-lg;
-        max-width: $width-lg;
-    }
-*/ }
+  background-color: rgba(255, 255, 255, 0.95); }
   .leaflet-sidebar.collapsed {
-    flex: 0 1 0;
-    /*
-        width: 0;
-        width: $tab-size;
-    */ }
+    flex: 0 1 0; }
   @media (min-width: 768px) {
     .leaflet-sidebar {
-      /*
-        top: $sidebar-margins;
-        bottom: $sidebar-margins;
-        */
-      /* TODO why 100px? */
       flex: 1 1 100px;
-      /* To make the transition work nicely.  (Transitions to/from
-           "width:auto" are buggy in Gecko and Webkit, at least.
-           See http://bugzil.la/731886 for more info.) */
-      /*
-        width: 30px;
-
-        transition: width $sidebar-transition;
-        */
       transition: flex 250ms; } }
 
-/*
-.leaflet-sidebar-left {
-    left: 0;
-    @media(min-width:$threshold-sm) {
-        left: $sidebar-margins;
-    }
-}
-*/
-/*
-.leaflet-sidebar-right {
-    right: 0;
-    @media(min-width:$threshold-sm) {
-        right: $sidebar-margins;
-    }
-}
-*/
 .leaflet-sidebar-tabs {
   position: absolute;
-  /*
-    top: 10px;
-    bottom: 10px;
-
-    height: 100%;
-    */
   top: 10px;
   bottom: 10px;
   height: auto;
-  z-index: 2001;
-  /*     .leaflet-sidebar-right & {
- */
+  z-index: 1000;
+  pointer-events: none;
   background-color: #fff; }
   .leaflet-sidebar-tabs.leaflet-sidebar-left {
     left: 0; }
@@ -103,6 +38,7 @@
     .leaflet-sidebar-tabs > li, .leaflet-sidebar-tabs > ul > li {
       width: 100%;
       height: 36px;
+      pointer-events: auto;
       color: #333;
       font-size: 12pt;
       overflow: hidden;
@@ -132,25 +68,7 @@
     bottom: 0; }
 
 .leaflet-sidebar-content {
-  /*
-    position: absolute;
-
-    .leaflet-sidebar-left & {
-        left: $tab-size;
-        right: 0;
-    }
-
-    .leaflet-sidebar-right & {
-        left: 0;
-        right: $tab-size;
-    }
-
-    top: 0;
-    bottom: 0;
-    */
   height: 100%;
-  /*     background-color: $content-bg;
- */
   overflow-x: hidden;
   overflow-y: auto; }
   .leaflet-sidebar-right .leaflet-sidebar-content {
@@ -165,23 +83,8 @@
   display: none;
   left: 0;
   right: 0;
-  padding: 10px 10px;
-  /*
-    @media(min-width:$threshold-sm) and (max-width:$threshold-md - 1px) {
-        min-width: $width-sm - $tab-size;
-    }
-
-    @media(min-width:$threshold-md) and (max-width:$threshold-lg - 1px) {
-        min-width: $width-md - $tab-size;
-    }
-
-    @media(min-width:$threshold-lg) {
-        min-width: $width-lg - $tab-size;
-    }
-*/ }
+  padding: 10px 10px; }
   .leaflet-sidebar-pane.active {
-    /*         display: block;
- */
     display: inherit; }
 
 .leaflet-sidebar-header {
@@ -229,6 +132,6 @@
 .leaflet-sidebar-tabs.collapsed.leaflet-touch > ul {
   box-shadow: none;
   border: 2px solid rgba(0, 0, 0, 0.2);
-  border-right: 0px;
+  border-right: 0;
   background-clip: padding-box;
   margin-top: 0; }
