@@ -1,6 +1,7 @@
 $sidebar-margins: 10px !default;
 $sidebar-border-radius: 4px !default;
-$sidebar-touch-border: 2px solid rgba(0, 0, 0, 0.2) !default;
+$sidebar-touch-border-width: 2px;
+$sidebar-touch-border: $sidebar-touch-border-width solid rgba(0, 0, 0, 0.2) !default;
 $sidebar-shadow: 0 1px 5px rgba(0, 0, 0, 0.65) !default;
 
 $tab-fg: #333 !default;
@@ -17,78 +18,54 @@ $tab-active-bg: #0074d9 !default;
     flex: 2.5 1 auto;
 }
 
-/*
-.leaflet-sidebar {
-    box-shadow: $sidebar-shadow;
+.leaflet-sidebar-tabs {
 
-    &.leaflet-touch {
-        box-shadow: none;
-        border-right: $sidebar-touch-border;
+    &.leaflet-touch > ul {
+        margin-top: $sidebar-touch-border-width;
     }
 
-    @media(min-width:$threshold-sm) {
-        border-radius: $sidebar-border-radius;
+    &.collapsed {
+
+        & > ul {
+            box-shadow: $sidebar-shadow;
+        }
+
+        &.leaflet-sidebar-left {
+            & > ul {
+                &, & > li:first-child {
+                    border-top-right-radius: $sidebar-border-radius;
+                }
+
+                &, & > li:last-child {
+                    border-bottom-right-radius: $sidebar-border-radius;
+                }
+            }
+        }
+        &.leaflet-sidebar-right {
+            & > ul {
+                &, & > li:first-child {
+                    border-top-left-radius: $sidebar-border-radius;
+                }
+
+                &, & > li:last-child {
+                    border-bottom-left-radius: $sidebar-border-radius;
+                }
+            }
+        }
 
         &.leaflet-touch {
-            border: $sidebar-touch-border;
-        }
-    }
-}
-*/
+            &, & > ul {
+                width: $tab-size + $sidebar-touch-border-width;
+            }
 
-// move other controls aside from sidebar
-/*
-.leaflet-sidebar-left {
-
-    & ~ .leaflet-control-container .leaflet-left {
-        @media(min-width:$threshold-sm) {
-            transition: left $sidebar-transition;
-        }
-
-        @media(min-width:$threshold-sm) and (max-width:$threshold-md - 1px) {
-            left: $width-sm + $sidebar-margins;
-        }
-
-        @media(min-width:$threshold-md) and (max-width:$threshold-lg - 1px) {
-            left: $width-md + $sidebar-margins;
-        }
-
-        @media(min-width:$threshold-lg) {
-            left: $width-lg + $sidebar-margins;
-        }
-    }
-
-    &.collapsed ~ .leaflet-control-container .leaflet-left {
-        @media(min-width:$threshold-sm) {
-            left: $tab-size + $sidebar-margins;
+            & > ul {
+                box-shadow: none;
+                border: $sidebar-touch-border;
+                border-right: 0px;
+                background-clip: padding-box;
+                margin-top: 0;
+            }
         }
     }
 }
 
-.leaflet-sidebar-right {
-
-    & ~ .leaflet-control-container .leaflet-right {
-        @media(min-width:$threshold-sm) {
-            transition: right $sidebar-transition;
-        }
-
-        @media(min-width:$threshold-sm) and (max-width:$threshold-md - 1px) {
-            right: $width-sm + $sidebar-margins;
-        }
-
-        @media(min-width:$threshold-md) and (max-width:$threshold-lg - 1px) {
-            right: $width-md + $sidebar-margins;
-        }
-
-        @media(min-width:$threshold-lg) {
-            right: $width-lg + $sidebar-margins;
-        }
-    }
-
-    &.collapsed ~ .leaflet-control-container .leaflet-right {
-        @media(min-width:$threshold-sm) {
-            right: $tab-size + $sidebar-margins;
-        }
-    }
-}
-*/

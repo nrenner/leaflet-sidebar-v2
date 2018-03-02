@@ -165,10 +165,12 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
 //        L.DomUtil.addClass(this._container, 'leaflet-control');
         L.DomUtil.addClass(this._container, 'leaflet-sidebar-' + this.getPosition());
         L.DomUtil.addClass(this._tabContainer, 'leaflet-sidebar-' + this.getPosition());
-/*
-        if (L.Browser.touch)
+
+        if (L.Browser.touch) {
             L.DomUtil.addClass(this._container, 'leaflet-touch');
-*/
+            L.DomUtil.addClass(this._tabContainer, 'leaflet-touch');
+        }
+
 
         // when adding to the map container, we should stop event propagation
         L.DomEvent.disableScrollPropagation(this._container);
