@@ -81,8 +81,8 @@
 
 .leaflet-sidebar-pane {
   display: none;
-  left: 0;
-  right: 0;
+  /* Fixes scrolling of long content in Firefox */
+  height: 0;
   padding: 10px 10px; }
   .leaflet-sidebar-pane.active {
     display: inherit; }

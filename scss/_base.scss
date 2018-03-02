@@ -162,8 +162,8 @@ $content-padding-horizontal: 10px !default;
 .leaflet-sidebar-pane {
     display: none;
 
-    left: 0;
-    right: 0;
+    /* Fixes scrolling of long content in Firefox */
+    height: 0;
 
     padding: $content-padding-vertical $content-padding-horizontal;
 
