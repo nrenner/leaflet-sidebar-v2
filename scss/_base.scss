@@ -38,8 +38,8 @@ $content-padding-horizontal: 10px !default;
     }
 
     @media(min-width:$threshold-sm) {
-        flex: 1 1 100px;
-
+        flex: 0 1 auto;
+ 
         transition: flex $sidebar-transition;
     }
 }

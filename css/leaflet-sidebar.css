@@ -11,7 +11,7 @@
     flex: 0 1 0; }
   @media (min-width: 768px) {
     .leaflet-sidebar {
-      flex: 1 1 100px;
+      flex: 0 1 auto;
       transition: flex 250ms; } }
 
 .leaflet-sidebar-tabs {
@@ -106,7 +106,10 @@
     float: left; }
 
 .leaflet-sidebar-map {
-  flex: 2.5 1 auto; }
+  flex: 1 1 auto; }
+  @media (min-width: 768px) {
+    .leaflet-sidebar-map {
+      flex: 1 0 66%; } }
 
 .leaflet-sidebar-tabs.leaflet-touch > ul {
   margin-top: 2px; }
