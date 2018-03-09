@@ -245,6 +245,7 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
             L.DomUtil.removeClass(this._tabContainer, 'collapsed');
             //if (this.options.autopan) this._panMap('open');
         }
+        this._map.invalidateSize();
 
         return this;
     },
@@ -270,6 +271,7 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
             L.DomUtil.addClass(this._container, 'collapsed');
             L.DomUtil.addClass(this._tabContainer, 'collapsed');
             //if (this.options.autopan) this._panMap('close');
+            this._map.invalidateSize();
         }
 
         return this;
