@@ -11,6 +11,10 @@ $tab-hover-bg: #eee !default;
 $tab-active-fg: #fff !default;
 $tab-active-bg: #0074d9 !default;
 
+$button-fg: $tab-fg;
+$button-active-fg: $tab-active-bg;
+
+
 @import 'base';
 
 .leaflet-sidebar-map
@@ -19,6 +23,12 @@ $tab-active-bg: #0074d9 !default;
 
     @media(min-width:$threshold-sm) {
         flex: 1 0 66%;
+
+        // no limiting width ratio using basis, let sidebar expand 
+        // to fit its content, see JS toggleExpand method
+        &.sidebar-expanded {
+            flex: 1 1 auto;
+        }
     }
 }
 

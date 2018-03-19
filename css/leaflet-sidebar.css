@@ -95,21 +95,36 @@
   color: #0074d9;
   background-color: #fff; }
 
-.leaflet-sidebar-close {
+.leaflet-sidebar-close,
+.leaflet-sidebar-expand {
   width: 36px;
   height: 36px;
   text-align: center;
-  cursor: pointer; }
-  .leaflet-sidebar-left .leaflet-sidebar-close {
-    float: right; }
-  .leaflet-sidebar-right .leaflet-sidebar-close {
-    float: left; }
+  cursor: pointer;
+  color: #333; }
+
+.leaflet-sidebar-expand.active {
+  color: #0074d9; }
+
+.leaflet-sidebar-left .leaflet-sidebar-close {
+  float: right; }
+
+.leaflet-sidebar-right .leaflet-sidebar-close {
+  float: left; }
+
+.leaflet-sidebar-left .leaflet-sidebar-expand {
+  float: left; }
+
+.leaflet-sidebar-right .leaflet-sidebar-expand {
+  float: right; }
 
 .leaflet-sidebar-map {
   flex: 1 1 auto; }
   @media (min-width: 768px) {
     .leaflet-sidebar-map {
-      flex: 1 0 66%; } }
+      flex: 1 0 66%; }
+      .leaflet-sidebar-map.sidebar-expanded {
+        flex: 1 1 auto; } }
 
 .leaflet-sidebar-tabs.leaflet-touch > ul {
   margin-top: 2px; }

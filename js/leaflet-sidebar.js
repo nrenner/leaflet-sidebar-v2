@@ -45,6 +45,7 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
         this._tabitems = [];
         this._panes = [];
         this._closeButtons = [];
+        this._expandButtons = [];
 
         L.setOptions(this, Object.assign({}, options, deprecatedOptions));
         return this;
@@ -115,6 +116,11 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
                     this._closeButtons.push(closeButtons[closeButtons.length - 1]);
                     this._closeClick(closeButtons[closeButtons.length - 1], 'on');
                 }
+                var expandButtons = child.querySelectorAll('.leaflet-sidebar-expand');
+                if (expandButtons.length) {
+                    this._expandButtons.push(expandButtons[expandButtons.length - 1]);
+                    this._expandClick(expandButtons[expandButtons.length - 1], 'on');
+                }
             }
         }
 
@@ -139,6 +145,7 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
         this._tabitems = [];
         this._panes = [];
         this._closeButtons = [];
+        this._expandButtons = [];
 
         // Remove click listeners for tab & close buttons
         for (i = 0; i < this._tabitems.length; i++)
@@ -146,6 +153,9 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
 
         for (i = 0; i < this._closeButtons.length; i++)
             this._closeClick(this._closeButtons[i], 'off');
+
+        for (i = 0; i < this._expandButtons.length; i++)
+            this._expandClick(this._expandButtons[i], 'off');
 
         return this;
     },
@@ -273,6 +283,36 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
             //if (this.options.autopan) this._panMap('close');
             this._map.invalidateSize();
         }
+
+        return this;
+    },
+
+    /**
+     * Expand the sidebar to fit its content.
+     * 
+     * @param {DOMelement} [button] 
+     *
+     * @returns {L.Control.Sidebar}
+     */
+    toggleExpand: function(button) {
+        // With the current flexbox setup, the sidebar always tries to fit to its content
+        // and the map basis determines the map/sidebar width ratio. Therefore the expanded
+        // class is set on the map, not to limit the sidebar and to give it the room it needs.
+
+        var expanded = L.DomUtil.hasClass(this._map.getContainer(), 'sidebar-expanded');
+
+        if (expanded) {
+            L.DomUtil.removeClass(this._map.getContainer(), 'sidebar-expanded');
+            for (i = 0; i < this._expandButtons.length; i++)
+                L.DomUtil.removeClass(this._expandButtons[i], 'active');
+        } else {
+            L.DomUtil.addClass(this._map.getContainer(), 'sidebar-expanded');
+            for (i = 0; i < this._expandButtons.length; i++)
+                L.DomUtil.addClass(this._expandButtons[i], 'active');
+        }
+        this._map.invalidateSize();
+
+        this.fire('toggleExpand', { expanded: !expanded });
 
         return this;
     },
@@ -483,6 +523,27 @@ L.Control.Sidebar = L.Control.extend(/** @lends L.Control.Sidebar.prototype */ {
             L.DomEvent.on(closeButton, 'click', this.onCloseClick, this);
         } else {
             L.DomEvent.off(closeButton, 'click', this.onCloseClick);
+        }
+    },
+
+    onExpandClick: function(e) {
+        var button = e.target || e.srcElement;
+        this.toggleExpand(button);
+    },
+
+    /**
+     * (un)registers the onclick event for the given expand button
+     * depending on the second argument
+     * @private
+     *
+     * @param {DOMelement} [expandButton]
+     * @param {String} [on] 'on' or 'off'
+     */
+    _expandClick: function(expandButton, on) {
+        if (on === 'on') {
+            L.DomEvent.on(expandButton, 'click', this.onExpandClick, this);
+        } else {
+            L.DomEvent.off(expandButton, 'click', this.onExpandClick);
         }
     },
 

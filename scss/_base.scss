@@ -181,17 +181,35 @@ $content-padding-horizontal: 10px !default;
     background-color: $header-bg;
 }
 
-.leaflet-sidebar-close {
+.leaflet-sidebar-close,
+.leaflet-sidebar-expand {
     width: $tab-size;
     height: $tab-size;
     text-align: center;
     cursor: pointer;
+    color: $button-fg;
+}
 
+.leaflet-sidebar-expand.active {
+    color: $button-active-fg;
+}
+
+.leaflet-sidebar-close {
     .leaflet-sidebar-left & {
         float: right;
     }
 
     .leaflet-sidebar-right & {
         float: left;
+    }
+}
+
+.leaflet-sidebar-expand {
+    .leaflet-sidebar-left & {
+        float: left;
+    }
+
+    .leaflet-sidebar-right & {
+        float: right;
     }
 }
