@@ -50,6 +50,7 @@ $content-padding-horizontal: 10px !default;
     bottom: $sidebar-margins;
     height: auto;
     z-index: $sidebar-z-index;
+    overflow: hidden;
     pointer-events: none;
 
     &.leaflet-sidebar-left {

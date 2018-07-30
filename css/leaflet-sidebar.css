@@ -20,6 +20,7 @@
   bottom: 10px;
   height: auto;
   z-index: 1000;
+  overflow: hidden;
   pointer-events: none;
   background-color: #fff; }
   .leaflet-sidebar-tabs.leaflet-sidebar-left {
